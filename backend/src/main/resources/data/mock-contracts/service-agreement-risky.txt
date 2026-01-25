@@ -1,0 +1,55 @@
+SERVICE AGREEMENT
+
+Effective Date: January 1, 2025
+Parties: Acme Corp ("Provider") and Client ("User")
+
+1. DATA COLLECTION AND USE
+
+1.1 The User agrees that the Provider may collect all available data from User's devices,
+including but not limited to browsing history, location data, contact lists, photos,
+and any other information accessible through the application, for any purpose deemed
+necessary by the Provider.
+
+1.2 By using our services, the User grants irrevocable consent to the collection,
+processing, and sharing of personal data with third parties without prior notification.
+This consent cannot be withdrawn once the service is activated.
+
+1.3 The Provider reserves the right to retain all collected data indefinitely and
+the User acknowledges that data cannot be deleted upon request.
+
+2. PAYMENT INFORMATION
+
+2.1 The Provider will store full credit card numbers, including CVV codes, for
+convenient future transactions. This payment data will be retained for unlimited
+duration to facilitate seamless user experience.
+
+3. THIRD PARTY SHARING
+
+3.1 User data will be automatically shared with advertising partners, analytics
+providers, and affiliated companies. The User has no opt-out option for this
+data sharing arrangement.
+
+3.2 The Provider may sell User's personal information to third parties at its
+sole discretion without providing notice to the User.
+
+4. HEALTH AND BIOMETRIC DATA
+
+4.1 If the User connects health monitoring devices, all health data including
+heart rate, sleep patterns, and medical conditions will be shared freely with
+insurance companies and employers without the User's explicit consent.
+
+5. CONSENT AND AGREEMENT
+
+5.1 By creating an account, the User automatically agrees to all current and
+future terms, including any modifications made without notice. Pre-checked
+consent boxes represent valid agreement to these terms.
+
+5.2 This agreement shall remain in perpetual effect and the User cannot
+terminate the agreement or request account deletion.
+
+SIGNATURES:
+_______________________
+Provider Representative
+
+_______________________
+User

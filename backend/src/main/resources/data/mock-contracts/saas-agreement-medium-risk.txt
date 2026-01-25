@@ -1,0 +1,69 @@
+SOFTWARE AS A SERVICE AGREEMENT
+
+Effective Date: January 1, 2025
+Provider: CloudSoft Solutions ("Provider")
+Customer: Enterprise Client ("Customer")
+
+1. SERVICE DESCRIPTION
+
+1.1 Provider agrees to provide Customer with access to its cloud-based
+project management software platform ("Service") as described in the
+applicable Order Form.
+
+2. DATA PROCESSING
+
+2.1 Provider will collect and process Customer data necessary for
+providing the Service, including user account information, project data,
+and usage analytics.
+
+2.2 Customer data may be processed by Provider's sub-processors located
+in various jurisdictions. A list of current sub-processors is available
+upon request, though Provider reserves the right to add new sub-processors
+without prior notification to Customer.
+
+2.3 Provider implements industry-standard security measures but does not
+guarantee complete protection against all security threats. Customer
+acknowledges implied consent to data processing by using the Service.
+
+3. DATA RETENTION
+
+3.1 Customer data will be retained for the duration of the subscription
+plus an additional 90 days for backup purposes.
+
+3.2 Upon written request, Provider will delete Customer data within 30
+business days, except where retention is required by applicable law or
+for legitimate business purposes including dispute resolution.
+
+4. INTELLECTUAL PROPERTY
+
+4.1 Customer retains all rights to Customer data. Provider retains all
+rights to the Service and any aggregated, anonymized data derived from
+Customer's use of the Service.
+
+4.2 Provider may use anonymized usage data to improve the Service and
+for marketing purposes without additional consent.
+
+5. PAYMENT TERMS
+
+5.1 Customer shall pay subscription fees as specified in the Order Form.
+Provider stores payment method details securely using PCI-compliant
+third-party payment processors.
+
+6. LIMITATION OF LIABILITY
+
+6.1 Provider's total liability shall not exceed the fees paid by Customer
+in the twelve (12) months preceding the claim.
+
+7. TERMINATION
+
+7.1 Either party may terminate this Agreement with 30 days written notice.
+
+7.2 Customer may request data export upon termination. Provider will
+provide data in a standard format within reasonable timeframes.
+
+SIGNATURES:
+_______________________
+CloudSoft Solutions
+
+_______________________
+Enterprise Client

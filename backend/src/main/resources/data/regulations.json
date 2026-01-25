@@ -1,0 +1,62 @@
+[
+  {
+    "name": "GDPR Article 5",
+    "category": "Data Protection",
+    "description": "Data minimization - personal data shall be adequate, relevant and limited to what is necessary in relation to the purposes for which they are processed",
+    "riskKeywords": ["collect all data", "unlimited data retention", "any purpose", "share with third parties without consent"]
+  },
+  {
+    "name": "GDPR Article 6",
+    "category": "Data Protection",
+    "description": "Lawfulness of processing - processing shall be lawful only if and to the extent that at least one legal basis applies: consent, contract, legal obligation, vital interests, public task, or legitimate interests",
+    "riskKeywords": ["without consent", "automatic processing", "implied consent", "pre-checked boxes"]
+  },
+  {
+    "name": "GDPR Article 7",
+    "category": "Data Protection",
+    "description": "Conditions for consent - consent must be freely given, specific, informed and unambiguous. Data subject shall have the right to withdraw consent at any time",
+    "riskKeywords": ["irrevocable consent", "bundled consent", "cannot withdraw", "perpetual agreement"]
+  },
+  {
+    "name": "GDPR Article 17",
+    "category": "Data Protection",
+    "description": "Right to erasure (right to be forgotten) - data subject has the right to obtain erasure of personal data without undue delay",
+    "riskKeywords": ["permanent storage", "cannot delete", "retain indefinitely", "no deletion rights"]
+  },
+  {
+    "name": "GDPR Article 25",
+    "category": "Data Protection",
+    "description": "Data protection by design and by default - implement appropriate technical measures to ensure only necessary personal data are processed",
+    "riskKeywords": ["collect by default", "all available data", "maximum data collection"]
+  },
+  {
+    "name": "CCPA Section 1798.100",
+    "category": "Consumer Rights",
+    "description": "Consumer right to know what personal information is being collected, the purposes, and whether it is sold or disclosed",
+    "riskKeywords": ["undisclosed collection", "hidden tracking", "secret data sharing"]
+  },
+  {
+    "name": "CCPA Section 1798.120",
+    "category": "Consumer Rights",
+    "description": "Consumer right to opt-out of the sale of their personal information at any time",
+    "riskKeywords": ["no opt-out", "mandatory data sale", "cannot refuse sharing", "automatic sale"]
+  },
+  {
+    "name": "CCPA Section 1798.105",
+    "category": "Consumer Rights",
+    "description": "Consumer right to request deletion of personal information collected from the consumer",
+    "riskKeywords": ["no deletion", "permanent records", "cannot be removed"]
+  },
+  {
+    "name": "PCI DSS Requirement 3",
+    "category": "Payment Security",
+    "description": "Protect stored cardholder data - keep cardholder data storage to a minimum, implement data retention policies",
+    "riskKeywords": ["store full card number", "retain CVV", "unlimited payment data storage"]
+  },
+  {
+    "name": "HIPAA Privacy Rule",
+    "category": "Healthcare",
+    "description": "Protected Health Information (PHI) must be safeguarded and disclosed only for permitted purposes with minimum necessary standard",
+    "riskKeywords": ["share health data freely", "disclose medical records", "third party health access"]
+  }
+]
