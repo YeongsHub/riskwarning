@@ -26,7 +26,7 @@ export default function RiskCard({ risk, onClick }: RiskCardProps) {
         <span className="text-sm font-semibold">
           {levelLabel[risk.level]}
         </span>
-        <span className="text-xs text-gray-500">클릭하여 상세 보기</span>
+        <span className="text-xs text-gray-500">Click for details</span>
       </div>
       <p className="text-sm text-gray-700 line-clamp-2">{risk.clause}</p>
     </div>

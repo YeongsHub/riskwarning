@@ -46,7 +46,7 @@ export default function RiskDetailModal({
 
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-gray-500 mb-2">
-                위험 조항
+                Risky Clause
               </h3>
               <p className="text-gray-700 bg-gray-50 p-3 rounded">
                 {risk.clause}
@@ -55,7 +55,7 @@ export default function RiskDetailModal({
 
             <div>
               <h3 className="text-sm font-semibold text-gray-500 mb-2">
-                위반 가능 규정
+                Potential Violation
               </h3>
               <p
                 className="text-lg font-medium p-3 rounded"

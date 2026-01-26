@@ -22,9 +22,9 @@ export default function ResultPage() {
   if (isError) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 mb-4">리스크 정보를 불러오는데 실패했습니다.</p>
+        <p className="text-red-600 mb-4">Failed to load risk information.</p>
         <Link to="/" className="text-blue-500 hover:underline">
-          다시 업로드하기
+          Upload Again
         </Link>
       </div>
     )
@@ -34,16 +34,16 @@ export default function ResultPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">분석 결과</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Analysis Results</h2>
           <p className="text-gray-600">
-            총 {risks?.length || 0}개의 리스크가 탐지되었습니다.
+            {risks?.length || 0} risk(s) detected.
           </p>
         </div>
         <Link
           to="/"
           className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
         >
-          새 계약서 분석
+          Analyze New Contract
         </Link>
       </div>
 

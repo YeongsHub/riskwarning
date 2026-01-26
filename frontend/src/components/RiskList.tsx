@@ -37,7 +37,7 @@ export default function RiskList({ risks, onRiskClick }: RiskListProps) {
 
       {risks.length === 0 && (
         <p className="text-center text-gray-500 py-8">
-          탐지된 리스크가 없습니다.
+          No risks detected.
         </p>
       )}
     </div>
