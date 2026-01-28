@@ -42,7 +42,7 @@ export default function FileUpload({ onUpload, isLoading }: FileUploadProps) {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={`
-        border-2 border-dashed rounded-lg p-12 text-center cursor-pointer
+        border-2 border-dashed p-12 text-center cursor-pointer
         transition-colors duration-200
         ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
         ${isLoading ? 'opacity-50 pointer-events-none' : ''}
@@ -68,7 +68,7 @@ export default function FileUpload({ onUpload, isLoading }: FileUploadProps) {
           />
           <label
             htmlFor="file-upload"
-            className="mt-4 inline-block px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer"
+            className="mt-4 inline-block px-6 py-2 bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
           >
             Select File
           </label>

@@ -14,13 +14,13 @@ export default function RiskList({ risks, onRiskClick }: RiskListProps) {
   return (
     <div className="space-y-6">
       <div className="flex gap-4 text-sm">
-        <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full">
+        <span className="px-3 py-1 bg-red-100 text-red-700">
           HIGH: {highRisks.length}
         </span>
-        <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full">
+        <span className="px-3 py-1 bg-amber-100 text-amber-700">
           MEDIUM: {mediumRisks.length}
         </span>
-        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full">
+        <span className="px-3 py-1 bg-emerald-100 text-emerald-700">
           LOW: {lowRisks.length}
         </span>
       </div>

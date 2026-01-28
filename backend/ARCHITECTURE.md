@@ -170,7 +170,7 @@ Response:
 
 ```properties
 # Database
-spring.datasource.url=jdbc:postgresql://localhost:5432/earlywarning
+spring.datasource.url=jdbc:postgresql://localhost:5433/earlywarning
 
 # OpenAI
 openai.api-key=${OPENAI_API_KEY}

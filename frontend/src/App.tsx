@@ -12,7 +12,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       {isAuthenticated && (
-        <header className="bg-white shadow-sm">
+        <header className="bg-white border-b border-gray-200">
           <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
             <div>
               <h1 className="text-xl font-bold text-gray-900">

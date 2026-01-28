@@ -28,7 +28,7 @@ export default function UploadPage() {
       <FileUpload onUpload={handleUpload} isLoading={uploadMutation.isPending} />
 
       {uploadMutation.isError && (
-        <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg">
+        <div className="mt-4 p-4 bg-red-50 text-red-700">
           An error occurred during upload. Please try again.
         </div>
       )}
