@@ -12,13 +12,17 @@ RUN npm run build
 
 FROM nginx:alpine
 
+# Install envsubst
+RUN apk add --no-cache gettext
+
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy nginx config template and entrypoint
-COPY nginx.conf.template /etc/nginx/nginx.conf.template
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+# Copy nginx config template
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+
+# Set environment variable for envsubst to only replace BACKEND_URL
+ENV NGINX_ENVSUBST_FILTER=BACKEND_URL
 
 EXPOSE 80
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["/bin/sh", "-c", "envsubst '$$BACKEND_URL' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
