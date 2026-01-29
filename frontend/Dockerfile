@@ -14,9 +14,11 @@ FROM nginx:alpine
 
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy nginx config template
-COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+# Copy nginx config template and entrypoint
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
