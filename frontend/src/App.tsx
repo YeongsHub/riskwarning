@@ -1,10 +1,28 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import UploadPage from './pages/UploadPage'
 import ResultPage from './pages/ResultPage'
+import ContractsPage from './pages/ContractsPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+
+function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
+  const location = useLocation()
+  const isActive = location.pathname === to
+  return (
+    <Link
+      to={to}
+      className={`text-sm px-3 py-1 rounded ${
+        isActive
+          ? 'bg-gray-100 text-gray-900 font-medium'
+          : 'text-gray-600 hover:text-gray-900'
+      }`}
+    >
+      {children}
+    </Link>
+  )
+}
 
 function AppContent() {
   const { isAuthenticated, user, logout } = useAuth()
@@ -14,11 +32,17 @@ function AppContent() {
       {isAuthenticated && (
         <header className="bg-white border-b border-gray-200">
           <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                EarlyWarning
-              </h1>
-              <p className="text-sm text-gray-500">Contract Risk Detection</p>
+            <div className="flex items-center gap-6">
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">
+                  EarlyWarning
+                </h1>
+                <p className="text-sm text-gray-500">Contract Risk Detection</p>
+              </div>
+              <nav className="flex gap-1">
+                <NavLink to="/">새 분석</NavLink>
+                <NavLink to="/contracts">분석 이력</NavLink>
+              </nav>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600">{user?.name}</span>
@@ -41,6 +65,14 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <UploadPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/contracts"
+            element={
+              <ProtectedRoute>
+                <ContractsPage />
               </ProtectedRoute>
             }
           />

@@ -18,9 +18,10 @@ public class RiskController {
                 risk.getId(),
                 risk.getClause(),
                 risk.getLevel().name(),
-                risk.getReason()
+                risk.getReason(),
+                risk.getSuggestion()
         ));
     }
 
-    record RiskDetailDto(Long id, String clause, String level, String reason) {}
+    record RiskDetailDto(Long id, String clause, String level, String reason, String suggestion) {}
 }

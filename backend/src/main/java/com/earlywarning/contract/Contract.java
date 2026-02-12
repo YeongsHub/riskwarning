@@ -1,5 +1,6 @@
 package com.earlywarning.contract;
 
+import com.earlywarning.auth.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,18 @@ public class Contract {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private AnalysisStatus status = AnalysisStatus.ANALYZING;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public enum AnalysisStatus {
+        ANALYZING, COMPLETED, FAILED
+    }
 }

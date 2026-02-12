@@ -1,4 +1,4 @@
-import type { Contract, Risk, RiskDetail } from '../types'
+import type { Contract, Risk, RiskDetail, ContractSummary, ContractDetail } from '../types'
 
 const API_BASE = '/api'
 
@@ -42,6 +42,36 @@ export async function uploadContract(file: File): Promise<Contract> {
   return response.json()
 }
 
+export async function getContracts(): Promise<ContractSummary[]> {
+  const response = await fetchWithAuth(`${API_BASE}/contracts`)
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch contracts')
+  }
+
+  return response.json()
+}
+
+export async function getContract(id: number): Promise<ContractDetail> {
+  const response = await fetchWithAuth(`${API_BASE}/contracts/${id}`)
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch contract')
+  }
+
+  return response.json()
+}
+
+export async function deleteContract(id: number): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE}/contracts/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to delete contract')
+  }
+}
+
 export async function getRisks(contractId: number): Promise<Risk[]> {
   const response = await fetchWithAuth(`${API_BASE}/contracts/${contractId}/risks`)
 
@@ -61,3 +91,5 @@ export async function getRiskDetail(riskId: number): Promise<RiskDetail> {
 
   return response.json()
 }
+
+export { getAuthHeaders }

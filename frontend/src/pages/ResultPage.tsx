@@ -2,14 +2,55 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import RiskList from '../components/RiskList'
 import RiskDetailModal from '../components/RiskDetailModal'
+import ContractViewer from '../components/ContractViewer'
+import AnalysisProgress from '../components/AnalysisProgress'
 import { useRisks, useRiskDetail } from '../hooks/useRisks'
+import { useContract } from '../hooks/useContracts'
+import { useAnalysisProgress } from '../hooks/useAnalysisProgress'
+
+type Tab = 'risks' | 'document'
 
 export default function ResultPage() {
   const { contractId } = useParams<{ contractId: string }>()
+  const id = Number(contractId)
   const [selectedRiskId, setSelectedRiskId] = useState<number | null>(null)
+  const [activeTab, setActiveTab] = useState<Tab>('risks')
 
-  const { data: risks, isLoading, isError } = useRisks(Number(contractId))
+  const { data: contract } = useContract(id)
+  const isAnalyzing = contract?.status === 'ANALYZING'
+  const isFailed = contract?.status === 'FAILED'
+
+  const { progress, isComplete } = useAnalysisProgress(id, isAnalyzing)
+  const { data: risks, isLoading, isError } = useRisks(id, !isAnalyzing || isComplete)
   const { data: riskDetail, isLoading: isDetailLoading } = useRiskDetail(selectedRiskId)
+
+  if (isAnalyzing && !isComplete) {
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">분석 진행 중</h2>
+          <Link
+            to="/contracts"
+            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
+          >
+            분석 이력
+          </Link>
+        </div>
+        <AnalysisProgress progress={progress} />
+      </div>
+    )
+  }
+
+  if (isFailed) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600 mb-4">분석에 실패했습니다.</p>
+        <Link to="/" className="text-blue-500 hover:underline">
+          다시 업로드
+        </Link>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return (
@@ -39,16 +80,56 @@ export default function ResultPage() {
             {risks?.length || 0} risk(s) detected.
           </p>
         </div>
-        <Link
-          to="/"
-          className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
-        >
-          Analyze New Contract
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            to="/contracts"
+            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
+          >
+            분석 이력
+          </Link>
+          <Link
+            to="/"
+            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
+          >
+            Analyze New Contract
+          </Link>
+        </div>
       </div>
 
-      {risks && (
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 mb-6">
+        <button
+          onClick={() => setActiveTab('risks')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
+            activeTab === 'risks'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Risk List
+        </button>
+        <button
+          onClick={() => setActiveTab('document')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
+            activeTab === 'document'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Document View
+        </button>
+      </div>
+
+      {activeTab === 'risks' && risks && (
         <RiskList risks={risks} onRiskClick={(id) => setSelectedRiskId(id)} />
+      )}
+
+      {activeTab === 'document' && contract?.content && risks && (
+        <ContractViewer
+          content={contract.content}
+          risks={risks}
+          onRiskClick={(id) => setSelectedRiskId(id)}
+        />
       )}
 
       <RiskDetailModal

@@ -7,4 +7,8 @@ import java.util.List;
 public interface RiskRepository extends JpaRepository<Risk, Long> {
 
     List<Risk> findByContractIdOrderByLevelAsc(Long contractId);
+
+    long countByContractIdAndLevel(Long contractId, Risk.RiskLevel level);
+
+    void deleteByContractId(Long contractId);
 }

@@ -36,6 +36,8 @@ services:
     container_name: earlywarning-frontend
     ports:
       - "5173:80"
+    environment:
+      BACKEND_URL: http://earlywarning-backend:8080
     depends_on:
       - backend
 

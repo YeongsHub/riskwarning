@@ -19,4 +19,8 @@ public class RiskService {
         return riskRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Risk not found: " + id));
     }
+
+    public long countByContractIdAndLevel(Long contractId, Risk.RiskLevel level) {
+        return riskRepository.countByContractIdAndLevel(contractId, level);
+    }
 }

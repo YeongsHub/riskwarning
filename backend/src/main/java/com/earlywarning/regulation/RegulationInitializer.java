@@ -24,20 +24,25 @@ public class RegulationInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         try {
-            if (regulationRepository.count() > 0) {
-                log.info("Regulations already initialized ({} records)", regulationRepository.count());
-                return;
-            }
+            List<String> existingNames = regulationRepository.findAll().stream()
+                    .map(Regulation::getName).toList();
 
+            log.info("Existing regulations: {} records", existingNames.size());
             log.info("Loading regulations from JSON...");
             ClassPathResource resource = new ClassPathResource("data/regulations.json");
 
+            int loaded = 0;
             try (InputStream is = resource.getInputStream()) {
                 List<RegulationDto> regulations = objectMapper.readValue(
                         is, new TypeReference<List<RegulationDto>>() {}
                 );
 
                 for (RegulationDto dto : regulations) {
+                    if (existingNames.contains(dto.name())) {
+                        log.debug("Skipping existing regulation: {}", dto.name());
+                        continue;
+                    }
+
                     Regulation regulation = new Regulation();
                     regulation.setName(dto.name());
                     regulation.setDescription(dto.description());
@@ -48,12 +53,14 @@ public class RegulationInitializer implements CommandLineRunner {
                         float[] embedding = openAiClient.createEmbedding(textForEmbedding);
                         regulation.setEmbedding(embedding);
                         regulationRepository.save(regulation);
+                        loaded++;
                         log.info("Loaded: {}", dto.name());
                     } catch (Exception e) {
                         log.error("Failed to load regulation: {}", dto.name(), e);
                     }
                 }
-                log.info("Regulations initialization complete: {} loaded", regulationRepository.count());
+                log.info("Regulations initialization complete: {} new loaded, {} total",
+                        loaded, regulationRepository.count());
             }
         } catch (Exception e) {
             log.warn("Could not initialize regulations. Vector extension may not be available: {}", e.getMessage());

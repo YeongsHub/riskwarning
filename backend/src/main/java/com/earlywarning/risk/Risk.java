@@ -29,6 +29,9 @@ public class Risk {
     @Column(columnDefinition = "TEXT")
     private String reason;
 
+    @Column(columnDefinition = "TEXT")
+    private String suggestion;
+
     public enum RiskLevel {
         HIGH, MEDIUM, LOW
     }

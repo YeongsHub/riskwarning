@@ -53,7 +53,7 @@ export default function RiskDetailModal({
               </p>
             </div>
 
-            <div>
+            <div className="mb-4">
               <h3 className="text-xs sm:text-sm font-semibold text-gray-500 mb-2">
                 Potential Violation
               </h3>
@@ -67,6 +67,17 @@ export default function RiskDetailModal({
                 {risk.reason}
               </p>
             </div>
+
+            {risk.suggestion && (
+              <div>
+                <h3 className="text-xs sm:text-sm font-semibold text-gray-500 mb-2">
+                  AI 수정 제안
+                </h3>
+                <p className="text-sm sm:text-base text-blue-800 bg-blue-50 border-l-4 border-blue-500 p-2 sm:p-3 break-words">
+                  {risk.suggestion}
+                </p>
+              </div>
+            )}
           </>
         ) : null}
       </div>
