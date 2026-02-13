@@ -44,7 +44,7 @@ export default function RiskDetailModal({
       onClick={onClose}
     >
       <div
-        className="bg-white w-full max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-6 border border-gray-200"
+        className="bg-white w-full max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-6 rounded-2xl shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (

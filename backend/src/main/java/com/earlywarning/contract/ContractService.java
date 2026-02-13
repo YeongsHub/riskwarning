@@ -1,5 +1,6 @@
 package com.earlywarning.contract;
 
+import com.earlywarning.alert.AlertRepository;
 import com.earlywarning.auth.User;
 import com.earlywarning.auth.UserRepository;
 import com.earlywarning.common.OpenAiClient;
@@ -40,6 +41,7 @@ public class ContractService {
 
     private final ContractRepository contractRepository;
     private final RiskRepository riskRepository;
+    private final AlertRepository alertRepository;
     private final RegulationRepository regulationRepository;
     private final UserRepository userRepository;
     private final OpenAiClient openAiClient;
@@ -156,6 +158,7 @@ public class ContractService {
     @Transactional
     public void delete(Long id, String userEmail) {
         Contract contract = findByIdAndUserEmail(id, userEmail);
+        alertRepository.deleteByContractId(contract.getId());
         riskRepository.deleteByContractId(contract.getId());
         contractRepository.delete(contract);
     }

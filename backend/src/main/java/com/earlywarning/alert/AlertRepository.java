@@ -9,4 +9,6 @@ public interface AlertRepository extends JpaRepository<RegulationAlert, Long> {
     List<RegulationAlert> findByUserEmailOrderByCreatedAtDesc(String email);
 
     long countByUserEmailAndReadFalse(String email);
+
+    void deleteByContractId(Long contractId);
 }

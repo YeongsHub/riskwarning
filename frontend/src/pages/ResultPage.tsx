@@ -106,9 +106,9 @@ export default function ResultPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Analysis Results</h2>
-          <p className="text-gray-600">
-            {risks?.length || 0} risk(s) detected.
+          <h2 className="text-2xl font-bold text-gray-900">분석 결과</h2>
+          <p className="text-gray-500">
+            총 {risks?.length || 0}건의 위험이 감지되었습니다.
           </p>
         </div>
         <div className="flex gap-2">
@@ -136,7 +136,7 @@ export default function ResultPage() {
             to="/"
             className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
           >
-            Analyze New Contract
+            새 분석
           </Link>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function ResultPage() {
               : 'border-transparent text-gray-500 hover:text-gray-700'
           }`}
         >
-          Risk List
+          위험 목록
         </button>
         <button
           onClick={() => setActiveTab('document')}
@@ -161,7 +161,7 @@ export default function ResultPage() {
               : 'border-transparent text-gray-500 hover:text-gray-700'
           }`}
         >
-          Document View
+          문서 뷰
         </button>
       </div>
 

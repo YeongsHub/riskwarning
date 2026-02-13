@@ -1,12 +1,20 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useContracts, useDeleteContract } from '../hooks/useContracts'
 import { useReanalyze } from '../hooks/useReanalyze'
+import Pagination from '../components/Pagination'
+
+const PAGE_SIZE = 10
 
 export default function ContractsPage() {
   const navigate = useNavigate()
   const { data: contracts, isLoading, isError } = useContracts()
   const deleteMutation = useDeleteContract()
   const reanalyzeMutation = useReanalyze()
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const totalPages = Math.ceil((contracts?.length || 0) / PAGE_SIZE)
+  const paginatedContracts = contracts?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   const handleReanalyze = (id: number) => {
     if (window.confirm('최신 규제 DB로 재분석하시겠습니까?')) {
@@ -55,12 +63,12 @@ export default function ContractsPage() {
         </Link>
       </div>
 
-      {contracts && contracts.length > 0 ? (
+      {paginatedContracts && paginatedContracts.length > 0 ? (
         <div className="space-y-3">
-          {contracts.map((contract) => (
+          {paginatedContracts.map((contract) => (
             <div
               key={contract.id}
-              className="bg-white border border-gray-200 p-4 hover:border-gray-300 transition-colors"
+              className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-all"
             >
               <div className="flex justify-between items-start">
                 <Link
@@ -138,6 +146,7 @@ export default function ContractsPage() {
             </div>
           ))}
         </div>
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       ) : (
         <div className="text-center py-12 text-gray-500">
           <p>분석된 계약서가 없습니다.</p>

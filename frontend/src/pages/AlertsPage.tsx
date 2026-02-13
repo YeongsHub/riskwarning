@@ -1,12 +1,19 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAlerts, useMarkAlertAsRead, useMarkAllAlertsAsRead } from '../hooks/useAlerts'
+import Pagination from '../components/Pagination'
+
+const PAGE_SIZE = 10
 
 export default function AlertsPage() {
   const { data: alerts, isLoading } = useAlerts()
   const markAsRead = useMarkAlertAsRead()
   const markAllAsRead = useMarkAllAlertsAsRead()
+  const [currentPage, setCurrentPage] = useState(1)
 
   const hasUnread = alerts?.some((a) => !a.read)
+  const totalPages = Math.ceil((alerts?.length || 0) / PAGE_SIZE)
+  const paginatedAlerts = alerts?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   const handleAlertClick = (alertId: number) => {
     markAsRead.mutate(alertId)
@@ -41,16 +48,16 @@ export default function AlertsPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          {alerts.map((alert) => (
+          {paginatedAlerts!.map((alert) => (
             <Link
               key={alert.id}
               to={`/result/${alert.contractId}`}
               onClick={() => !alert.read && handleAlertClick(alert.id)}
-              className={`block p-4 border rounded-lg transition-colors ${
+              className={`block p-4 border rounded-xl transition-all ${
                 alert.read
-                  ? 'bg-white border-gray-200 text-gray-500'
-                  : 'bg-blue-50 border-blue-200 text-gray-900'
-              } hover:bg-gray-50`}
+                  ? 'bg-white border-gray-100 text-gray-500 shadow-sm'
+                  : 'bg-blue-50 border-blue-200 text-gray-900 shadow-sm'
+              } hover:shadow-md`}
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="flex-1 min-w-0">
@@ -71,6 +78,7 @@ export default function AlertsPage() {
             </Link>
           ))}
         </div>
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       )}
     </div>
   )
