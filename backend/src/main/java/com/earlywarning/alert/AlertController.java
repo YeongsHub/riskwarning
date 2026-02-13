@@ -2,10 +2,9 @@ package com.earlywarning.alert;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +16,8 @@ public class AlertController {
     private final AlertService alertService;
 
     @GetMapping
-    public ResponseEntity<List<AlertDto>> getAlerts(@AuthenticationPrincipal UserDetails userDetails) {
-        List<RegulationAlert> alerts = alertService.findByUserEmail(userDetails.getUsername());
+    public ResponseEntity<List<AlertDto>> getAlerts(Principal principal) {
+        List<RegulationAlert> alerts = alertService.findByUserEmail(principal.getName());
         List<AlertDto> dtos = alerts.stream().map(a -> new AlertDto(
                 a.getId(),
                 a.getContract().getId(),
@@ -32,8 +31,8 @@ public class AlertController {
     }
 
     @GetMapping("/unread-count")
-    public ResponseEntity<Map<String, Long>> getUnreadCount(@AuthenticationPrincipal UserDetails userDetails) {
-        long count = alertService.countUnread(userDetails.getUsername());
+    public ResponseEntity<Map<String, Long>> getUnreadCount(Principal principal) {
+        long count = alertService.countUnread(principal.getName());
         return ResponseEntity.ok(Map.of("count", count));
     }
 
@@ -44,8 +43,8 @@ public class AlertController {
     }
 
     @PostMapping("/read-all")
-    public ResponseEntity<Void> markAllAsRead(@AuthenticationPrincipal UserDetails userDetails) {
-        alertService.markAllAsRead(userDetails.getUsername());
+    public ResponseEntity<Void> markAllAsRead(Principal principal) {
+        alertService.markAllAsRead(principal.getName());
         return ResponseEntity.ok().build();
     }
 
