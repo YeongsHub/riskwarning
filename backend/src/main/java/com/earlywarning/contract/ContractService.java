@@ -9,6 +9,7 @@ import com.earlywarning.regulation.Regulation;
 import com.earlywarning.regulation.RegulationRepository;
 import com.earlywarning.risk.Risk;
 import com.earlywarning.risk.RiskRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -47,6 +48,7 @@ public class ContractService {
     private final OpenAiClient openAiClient;
     private final TextChunker textChunker;
     private final AnalysisProgressEmitter progressEmitter;
+    private final EntityManager entityManager;
 
     @Value("${risk.similarity-threshold}")
     private double similarityThreshold;
@@ -161,6 +163,20 @@ public class ContractService {
         alertRepository.deleteByContractId(contract.getId());
         riskRepository.deleteByContractId(contract.getId());
         contractRepository.delete(contract);
+        contractRepository.flush();
+        resetSequences();
+    }
+
+    private void resetSequences() {
+        entityManager.createNativeQuery(
+                "SELECT setval('contract_id_seq', COALESCE((SELECT MAX(id) FROM contract), 0) + 1, false)"
+        ).getSingleResult();
+        entityManager.createNativeQuery(
+                "SELECT setval('risk_id_seq', COALESCE((SELECT MAX(id) FROM risk), 0) + 1, false)"
+        ).getSingleResult();
+        entityManager.createNativeQuery(
+                "SELECT setval('regulation_alert_id_seq', COALESCE((SELECT MAX(id) FROM regulation_alert), 0) + 1, false)"
+        ).getSingleResult();
     }
 
     public byte[] generateReport(Long contractId, String userEmail) throws IOException {

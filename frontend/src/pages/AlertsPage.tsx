@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAlerts, useMarkAlertAsRead, useMarkAllAlertsAsRead } from '../hooks/useAlerts'
 import Pagination from '../components/Pagination'
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 5
 
 export default function AlertsPage() {
   const { data: alerts, isLoading } = useAlerts()
@@ -47,38 +47,40 @@ export default function AlertsPage() {
           <p className="text-gray-500">알림이 없습니다.</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {paginatedAlerts!.map((alert) => (
-            <Link
-              key={alert.id}
-              to={`/result/${alert.contractId}`}
-              onClick={() => !alert.read && handleAlertClick(alert.id)}
-              className={`block p-4 border rounded-xl transition-all ${
-                alert.read
-                  ? 'bg-white border-gray-100 text-gray-500 shadow-sm'
-                  : 'bg-blue-50 border-blue-200 text-gray-900 shadow-sm'
-              } hover:shadow-md`}
-            >
-              <div className="flex justify-between items-start gap-2">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    {!alert.read && (
-                      <span className="w-2 h-2 bg-blue-500 rounded-full shrink-0" />
-                    )}
-                    <span className="text-sm font-medium truncate">
-                      {alert.regulationName}
-                    </span>
+        <>
+          <div className="space-y-2">
+            {paginatedAlerts!.map((alert) => (
+              <Link
+                key={alert.id}
+                to={`/result/${alert.contractId}`}
+                onClick={() => !alert.read && handleAlertClick(alert.id)}
+                className={`block p-4 border rounded-xl transition-all ${
+                  alert.read
+                    ? 'bg-white border-gray-100 text-gray-500 shadow-sm'
+                    : 'bg-blue-50 border-blue-200 text-gray-900 shadow-sm'
+                } hover:shadow-md`}
+              >
+                <div className="flex justify-between items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      {!alert.read && (
+                        <span className="w-2 h-2 bg-blue-500 rounded-full shrink-0" />
+                      )}
+                      <span className="text-sm font-medium truncate">
+                        {alert.regulationName}
+                      </span>
+                    </div>
+                    <p className="text-sm break-words">{alert.message}</p>
                   </div>
-                  <p className="text-sm break-words">{alert.message}</p>
+                  <span className="text-xs text-gray-400 shrink-0 whitespace-nowrap">
+                    {new Date(alert.createdAt).toLocaleDateString('ko-KR')}
+                  </span>
                 </div>
-                <span className="text-xs text-gray-400 shrink-0 whitespace-nowrap">
-                  {new Date(alert.createdAt).toLocaleDateString('ko-KR')}
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+              </Link>
+            ))}
+          </div>
+          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+        </>
       )}
     </div>
   )
