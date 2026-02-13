@@ -4,8 +4,11 @@ import ProtectedRoute from './components/ProtectedRoute'
 import UploadPage from './pages/UploadPage'
 import ResultPage from './pages/ResultPage'
 import ContractsPage from './pages/ContractsPage'
+import DashboardPage from './pages/DashboardPage'
+import AlertsPage from './pages/AlertsPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import AlertBell from './components/AlertBell'
 
 function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   const location = useLocation()
@@ -41,10 +44,12 @@ function AppContent() {
               </div>
               <nav className="flex gap-1">
                 <NavLink to="/">새 분석</NavLink>
+                <NavLink to="/dashboard">대시보드</NavLink>
                 <NavLink to="/contracts">분석 이력</NavLink>
               </nav>
             </div>
             <div className="flex items-center gap-4">
+              <AlertBell />
               <span className="text-sm text-gray-600">{user?.name}</span>
               <button
                 onClick={logout}
@@ -69,10 +74,26 @@ function AppContent() {
             }
           />
           <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/contracts"
             element={
               <ProtectedRoute>
                 <ContractsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/alerts"
+            element={
+              <ProtectedRoute>
+                <AlertsPage />
               </ProtectedRoute>
             }
           />

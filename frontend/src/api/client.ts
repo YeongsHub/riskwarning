@@ -1,4 +1,4 @@
-import type { Contract, Risk, RiskDetail, ContractSummary, ContractDetail } from '../types'
+import type { Contract, Risk, RiskDetail, ContractSummary, ContractDetail, DashboardStats, NegotiationGuide, RegulationAlert, UnreadCount } from '../types'
 
 const API_BASE = '/api'
 
@@ -90,6 +90,96 @@ export async function getRiskDetail(riskId: number): Promise<RiskDetail> {
   }
 
   return response.json()
+}
+
+export async function downloadReport(contractId: number): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE}/contracts/${contractId}/report`)
+
+  if (!response.ok) {
+    throw new Error('Failed to download report')
+  }
+
+  const blob = await response.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `report-${contractId}.pdf`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const response = await fetchWithAuth(`${API_BASE}/dashboard/stats`)
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch dashboard stats')
+  }
+
+  return response.json()
+}
+
+export async function reanalyzeContract(id: number): Promise<Contract> {
+  const response = await fetchWithAuth(`${API_BASE}/contracts/${id}/reanalyze`, {
+    method: 'POST',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to reanalyze contract')
+  }
+
+  return response.json()
+}
+
+export async function getNegotiationGuide(riskId: number): Promise<NegotiationGuide> {
+  const response = await fetchWithAuth(`${API_BASE}/risks/${riskId}/negotiation-guide`)
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch negotiation guide')
+  }
+
+  return response.json()
+}
+
+export async function getAlerts(): Promise<RegulationAlert[]> {
+  const response = await fetchWithAuth(`${API_BASE}/alerts`)
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch alerts')
+  }
+
+  return response.json()
+}
+
+export async function getUnreadAlertCount(): Promise<UnreadCount> {
+  const response = await fetchWithAuth(`${API_BASE}/alerts/unread-count`)
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch unread count')
+  }
+
+  return response.json()
+}
+
+export async function markAlertAsRead(alertId: number): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE}/alerts/${alertId}/read`, {
+    method: 'POST',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to mark alert as read')
+  }
+}
+
+export async function markAllAlertsAsRead(): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE}/alerts/read-all`, {
+    method: 'POST',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to mark all alerts as read')
+  }
 }
 
 export { getAuthHeaders }

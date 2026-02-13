@@ -80,3 +80,43 @@ export interface AnalysisProgress {
   current: number
   total: number
 }
+
+export interface RecentContract {
+  id: number
+  filename: string
+  status: string
+  createdAt: string
+}
+
+export interface DashboardStats {
+  totalContracts: number
+  totalRisks: number
+  risksByLevel: RiskSummary
+  recentContracts: RecentContract[]
+}
+
+export interface NegotiationPerspective {
+  summary: string
+  negotiationPoints: string[]
+}
+
+export interface NegotiationGuide {
+  gapPerspective: NegotiationPerspective
+  eulPerspective: NegotiationPerspective
+  alternativeClauses: string[]
+  riskIfUnchanged: string
+}
+
+export interface RegulationAlert {
+  id: number
+  contractId: number
+  contractFilename: string
+  regulationName: string
+  message: string
+  read: boolean
+  createdAt: string
+}
+
+export interface UnreadCount {
+  count: number
+}

@@ -60,11 +60,18 @@ public class OpenAiClient {
 
                 관련 규제: %s
 
+                위험 수준 판단 기준:
+                - HIGH: 법률 위반이 명백하거나, 계약 무효/취소 사유가 될 수 있는 조항 (예: 강행규정 위반, 소비자 권리 박탈, 불공정 약관)
+                - MEDIUM: 법적 분쟁 가능성이 있으나 해석에 따라 유효할 수 있는 조항 (예: 모호한 책임 제한, 불명확한 해지 조건, 과도한 위약금)
+                - LOW: 법적 위험이 경미하거나 개선 권고 수준인 조항 (예: 통지 기간 부족, 관할법원 미지정, 사소한 용어 불일치)
+                - NONE: 관련 규제와 매칭되었으나 실제 법적 위험이 없는 경우
+
                 규칙:
                 1. "clause"에는 위험한 핵심 문장만 원문 그대로 추출하세요 (텍스트에서 복사, 번역하지 말 것)
                 2. "reason"은 한국어로 위반 규제명과 위험 사유를 간결하게 설명하세요
                 3. "suggestion"은 해당 조항을 법적으로 안전하게 수정한 대체 문구를 한국어로 제시하세요. 원문과 같은 어투를 유지하되 위험 요소를 제거하세요
                 4. 위험이 없으면 level을 "NONE"으로 하세요
+                5. 위험 수준을 신중하게 판단하세요. 모든 위험을 HIGH로 분류하지 마세요.
 
                 다음 JSON 형식으로 응답하세요:
                 {"clause": "원문에서 추출한 위험 문장", "level": "HIGH|MEDIUM|LOW|NONE", "reason": "한국어 설명", "suggestion": "수정 제안 문구"}
@@ -103,4 +110,81 @@ public class OpenAiClient {
     }
 
     public record RiskAnalysis(String clause, String level, String reason, String suggestion) {}
+
+    public NegotiationGuide generateNegotiationGuide(String clause, String level, String reason, String suggestion) throws IOException {
+        String prompt = """
+                다음 계약 조항에 대해 협상 가이드를 생성하세요:
+
+                조항: "%s"
+                위험 수준: %s
+                위험 사유: %s
+                수정 제안: %s
+
+                갑(계약 제공자)과 을(계약 수령자) 양쪽 관점에서 협상 포인트를 분석하세요.
+
+                다음 JSON 형식으로 응답하세요:
+                {
+                  "gap_perspective": {
+                    "summary": "갑 관점 요약 (1-2문장)",
+                    "negotiation_points": ["협상 포인트1", "협상 포인트2", "협상 포인트3"]
+                  },
+                  "eul_perspective": {
+                    "summary": "을 관점 요약 (1-2문장)",
+                    "negotiation_points": ["협상 포인트1", "협상 포인트2", "협상 포인트3"]
+                  },
+                  "alternative_clauses": ["대안 조항1", "대안 조항2"],
+                  "risk_if_unchanged": "이 조항을 수정하지 않을 경우 발생할 수 있는 구체적 위험 설명"
+                }
+                """.formatted(clause, level, reason, suggestion != null ? suggestion : "없음");
+
+        Map<String, Object> body = Map.of(
+                "model", chatModel,
+                "messages", List.of(Map.of("role", "user", "content", prompt)),
+                "response_format", Map.of("type", "json_object")
+        );
+
+        Request request = new Request.Builder()
+                .url("https://api.openai.com/v1/chat/completions")
+                .header("Authorization", "Bearer " + apiKey)
+                .post(RequestBody.create(
+                        mapper.writeValueAsString(body),
+                        MediaType.parse("application/json")
+                ))
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            JsonNode json = mapper.readTree(response.body().string());
+            String content = json.get("choices").get(0).get("message").get("content").asText();
+            JsonNode result = mapper.readTree(content);
+
+            Perspective gapPerspective = parsePerspective(result.get("gap_perspective"));
+            Perspective eulPerspective = parsePerspective(result.get("eul_perspective"));
+
+            List<String> alternativeClauses = new java.util.ArrayList<>();
+            if (result.has("alternative_clauses")) {
+                for (JsonNode node : result.get("alternative_clauses")) {
+                    alternativeClauses.add(node.asText());
+                }
+            }
+
+            String riskIfUnchanged = result.has("risk_if_unchanged") ? result.get("risk_if_unchanged").asText() : "";
+
+            return new NegotiationGuide(gapPerspective, eulPerspective, alternativeClauses, riskIfUnchanged);
+        }
+    }
+
+    private Perspective parsePerspective(JsonNode node) {
+        String summary = node.has("summary") ? node.get("summary").asText() : "";
+        List<String> points = new java.util.ArrayList<>();
+        if (node.has("negotiation_points")) {
+            for (JsonNode p : node.get("negotiation_points")) {
+                points.add(p.asText());
+            }
+        }
+        return new Perspective(summary, points);
+    }
+
+    public record NegotiationGuide(Perspective gapPerspective, Perspective eulPerspective,
+                                    List<String> alternativeClauses, String riskIfUnchanged) {}
+    public record Perspective(String summary, List<String> negotiationPoints) {}
 }

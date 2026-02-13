@@ -12,8 +12,8 @@ export async function login(credentials: LoginCredentials): Promise<AuthResponse
   })
 
   if (!response.ok) {
-    const error = await response.text()
-    throw new Error(error || 'Login failed')
+    const body = await response.json().catch(() => null)
+    throw new Error(body?.error || '이메일 또는 비밀번호가 올바르지 않습니다.')
   }
 
   return response.json()
@@ -29,8 +29,8 @@ export async function register(credentials: RegisterCredentials): Promise<AuthRe
   })
 
   if (!response.ok) {
-    const error = await response.text()
-    throw new Error(error || 'Registration failed')
+    const body = await response.json().catch(() => null)
+    throw new Error(body?.error || '회원가입에 실패했습니다.')
   }
 
   return response.json()

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "regulation")
 @Getter @Setter
@@ -25,4 +27,10 @@ public class Regulation {
     @Type(VectorType.class)
     @Column(columnDefinition = "vector(1536)")
     private float[] embedding;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Column(name = "content_hash")
+    private String contentHash;
 }

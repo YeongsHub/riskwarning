@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import org.springframework.http.HttpHeaders;
+
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -84,6 +86,26 @@ public class ContractController {
                 .map(r -> new RiskDto(r.getId(), r.getClause(), r.getLevel().name()))
                 .toList();
         return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/{id}/report")
+    public ResponseEntity<byte[]> report(@PathVariable Long id, Principal principal) throws IOException {
+        byte[] pdf = contractService.generateReport(id, principal.getName());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"report-" + id + ".pdf\"")
+                .body(pdf);
+    }
+
+    @PostMapping("/{id}/reanalyze")
+    public ResponseEntity<?> reanalyze(@PathVariable Long id, Principal principal) {
+        Contract contract = contractService.reanalyze(id, principal.getName());
+        contractService.analyzeAsync(contract.getId());
+        return ResponseEntity.ok(Map.of(
+                "id", contract.getId(),
+                "status", contract.getStatus().name(),
+                "message", "Reanalysis started"
+        ));
     }
 
     @GetMapping(value = "/{id}/progress", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

@@ -1,9 +1,20 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useContracts, useDeleteContract } from '../hooks/useContracts'
+import { useReanalyze } from '../hooks/useReanalyze'
 
 export default function ContractsPage() {
+  const navigate = useNavigate()
   const { data: contracts, isLoading, isError } = useContracts()
   const deleteMutation = useDeleteContract()
+  const reanalyzeMutation = useReanalyze()
+
+  const handleReanalyze = (id: number) => {
+    if (window.confirm('최신 규제 DB로 재분석하시겠습니까?')) {
+      reanalyzeMutation.mutate(id, {
+        onSuccess: () => navigate(`/result/${id}`),
+      })
+    }
+  }
 
   const handleDelete = (id: number, filename: string) => {
     if (window.confirm(`"${filename}"을(를) 삭제하시겠습니까?`)) {
@@ -105,13 +116,24 @@ export default function ContractsPage() {
                     </div>
                   )}
                 </Link>
-                <button
-                  onClick={() => handleDelete(contract.id, contract.filename)}
-                  disabled={deleteMutation.isPending}
-                  className="ml-4 text-sm text-gray-400 hover:text-red-500 shrink-0"
-                >
-                  삭제
-                </button>
+                <div className="ml-4 flex gap-2 shrink-0">
+                  {contract.status !== 'ANALYZING' && (
+                    <button
+                      onClick={() => handleReanalyze(contract.id)}
+                      disabled={reanalyzeMutation.isPending}
+                      className="text-sm text-gray-400 hover:text-amber-600"
+                    >
+                      재분석
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDelete(contract.id, contract.filename)}
+                    disabled={deleteMutation.isPending}
+                    className="text-sm text-gray-400 hover:text-red-500"
+                  >
+                    삭제
+                  </button>
+                </div>
               </div>
             </div>
           ))}

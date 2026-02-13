@@ -10,4 +10,8 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     List<Contract> findByUserEmailOrderByCreatedAtDesc(String email);
 
     Optional<Contract> findByIdAndUserEmail(Long id, String email);
+
+    long countByUserEmail(String email);
+
+    List<Contract> findByStatus(Contract.AnalysisStatus status);
 }

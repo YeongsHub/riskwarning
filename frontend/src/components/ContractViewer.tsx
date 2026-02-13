@@ -84,6 +84,7 @@ export default function ContractViewer({ content, risks, onRiskClick }: Contract
         segment.risk ? (
           <span
             key={i}
+            data-risk-id={segment.risk.id}
             onClick={() => onRiskClick(segment.risk!.id)}
             className="cursor-pointer transition-opacity hover:opacity-80"
             style={{

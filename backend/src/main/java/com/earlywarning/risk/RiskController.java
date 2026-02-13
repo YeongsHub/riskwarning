@@ -1,5 +1,6 @@
 package com.earlywarning.risk;
 
+import com.earlywarning.common.OpenAiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,16 @@ public class RiskController {
                 risk.getReason(),
                 risk.getSuggestion()
         ));
+    }
+
+    @GetMapping("/{id}/negotiation-guide")
+    public ResponseEntity<OpenAiClient.NegotiationGuide> getNegotiationGuide(@PathVariable Long id) {
+        try {
+            OpenAiClient.NegotiationGuide guide = riskService.generateNegotiationGuide(id);
+            return ResponseEntity.ok(guide);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     record RiskDetailDto(Long id, String clause, String level, String reason, String suggestion) {}
