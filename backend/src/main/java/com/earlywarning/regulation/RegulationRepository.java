@@ -16,4 +16,15 @@ public interface RegulationRepository extends JpaRepository<Regulation, Long> {
         """, nativeQuery = true)
     List<Regulation> findSimilar(@Param("embedding") String embedding,
                                   @Param("threshold") double threshold);
+
+    @Query(value = """
+        SELECT * FROM regulation
+        WHERE embedding <=> CAST(:embedding AS vector) < :threshold
+          AND category IN (:categories)
+        ORDER BY embedding <=> CAST(:embedding AS vector)
+        LIMIT 3
+        """, nativeQuery = true)
+    List<Regulation> findSimilarByCategories(@Param("embedding") String embedding,
+                                              @Param("threshold") double threshold,
+                                              @Param("categories") List<String> categories);
 }

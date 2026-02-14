@@ -50,8 +50,12 @@ public class RegulationInitializer implements CommandLineRunner {
 
                     Regulation existing = existingByName.get(dto.name());
                     if (existing != null) {
+                        // Always update category and relatedCases
+                        existing.setCategory(dto.category());
+
                         // Check if content has changed via hash
                         if (contentHash.equals(existing.getContentHash())) {
+                            regulationRepository.save(existing);
                             log.debug("Skipping unchanged regulation: {}", dto.name());
                             continue;
                         }
@@ -83,6 +87,7 @@ public class RegulationInitializer implements CommandLineRunner {
                     regulation.setName(dto.name());
                     regulation.setDescription(dto.description());
                     regulation.setContentHash(contentHash);
+                    regulation.setCategory(dto.category());
 
                     try {
                         String textForEmbedding = dto.name() + ": " + dto.description() +

@@ -1,6 +1,8 @@
 package com.earlywarning.contract;
 
 import com.earlywarning.alert.AlertRepository;
+import com.earlywarning.alert.AlertService;
+import com.earlywarning.alert.RegulationAlert;
 import com.earlywarning.auth.User;
 import com.earlywarning.auth.UserRepository;
 import com.earlywarning.common.OpenAiClient;
@@ -31,9 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -43,6 +44,7 @@ public class ContractService {
     private final ContractRepository contractRepository;
     private final RiskRepository riskRepository;
     private final AlertRepository alertRepository;
+    private final AlertService alertService;
     private final RegulationRepository regulationRepository;
     private final UserRepository userRepository;
     private final OpenAiClient openAiClient;
@@ -53,8 +55,15 @@ public class ContractService {
     @Value("${risk.similarity-threshold}")
     private double similarityThreshold;
 
+    private static final Map<String, List<String>> INDUSTRY_CATEGORIES = Map.of(
+            "REAL_ESTATE", List.of("약관규제", "소비자보호", "공정거래위원회"),
+            "EMPLOYMENT", List.of("고용노동부", "약관규제", "공정거래위원회"),
+            "IT_SAAS", List.of("약관규제", "소비자보호", "개인정보보호", "정보통신", "개인정보보호위원회", "공정거래위원회", "Data Protection", "Consumer Rights"),
+            "FINANCE", List.of("금융감독원", "소비자보호", "약관규제", "공정거래위원회", "Payment Security")
+    );
+
     @Transactional
-    public Contract uploadAndStartAnalysis(MultipartFile file, String userEmail) throws IOException {
+    public Contract uploadAndStartAnalysis(MultipartFile file, String userEmail, String industry) throws IOException {
         String content = extractText(file);
 
         User user = userRepository.findByEmail(userEmail)
@@ -64,6 +73,7 @@ public class ContractService {
         contract.setFilename(file.getOriginalFilename());
         contract.setContent(content);
         contract.setUser(user);
+        contract.setIndustry(industry);
         contract.setStatus(Contract.AnalysisStatus.ANALYZING);
         contractRepository.save(contract);
 
@@ -81,7 +91,16 @@ public class ContractService {
             List<String> chunks = textChunker.chunk(contract.getContent());
             int totalChunks = chunks.size();
 
+            // Resolve industry → category list
+            String industry = contract.getIndustry() != null ? contract.getIndustry() : "GENERAL";
+            List<String> categories = INDUSTRY_CATEGORIES.get(industry);
+
             progressEmitter.send(contractId, "CHUNKING", "텍스트 분석 중...", 0, totalChunks);
+
+            // Track matched regulations for alert creation
+            Set<Regulation> allMatchedRegulations = new LinkedHashSet<>();
+            int riskCount = 0;
+            int highCount = 0;
 
             for (int i = 0; i < totalChunks; i++) {
                 String chunk = chunks.get(i);
@@ -92,9 +111,16 @@ public class ContractService {
                         "규제 비교 중... (" + (i + 1) + "/" + totalChunks + ")",
                         i + 1, totalChunks);
 
-                List<Regulation> matchedRegs = regulationRepository.findSimilar(
-                        embeddingStr, similarityThreshold
-                );
+                List<Regulation> matchedRegs;
+                if (categories != null) {
+                    matchedRegs = regulationRepository.findSimilarByCategories(
+                            embeddingStr, similarityThreshold, categories
+                    );
+                } else {
+                    matchedRegs = regulationRepository.findSimilar(
+                            embeddingStr, similarityThreshold
+                    );
+                }
 
                 if (!matchedRegs.isEmpty()) {
                     List<String> regNames = matchedRegs.stream()
@@ -115,12 +141,19 @@ public class ContractService {
                         risk.setReason(analysis.reason());
                         risk.setSuggestion(analysis.suggestion());
                         riskRepository.save(risk);
+
+                        riskCount++;
+                        if ("HIGH".equals(analysis.level())) highCount++;
+                        allMatchedRegulations.addAll(matchedRegs);
                     }
                 }
             }
 
             contract.setStatus(Contract.AnalysisStatus.COMPLETED);
             contractRepository.save(contract);
+
+            // Create alerts for detected risks
+            createAnalysisAlerts(contract, allMatchedRegulations, riskCount, highCount);
 
             progressEmitter.send(contractId, "COMPLETED", "분석 완료", totalChunks, totalChunks);
             progressEmitter.complete(contractId);
@@ -133,6 +166,40 @@ public class ContractService {
             });
             progressEmitter.send(contractId, "FAILED", "분석 실패: " + e.getMessage(), 0, 0);
             progressEmitter.complete(contractId);
+        }
+    }
+
+    private void createAnalysisAlerts(Contract contract, Set<Regulation> matchedRegulations, int riskCount, int highCount) {
+        try {
+            if (riskCount == 0) return;
+
+            // 1. Summary alert
+            String severity = highCount > 0 ? "긴급" : "주의";
+            String summaryMsg = String.format("[%s] '%s' 분석 완료: %d건의 위험 조항 감지 (HIGH %d건). 즉시 검토가 필요합니다.",
+                    severity, contract.getFilename(), riskCount, highCount);
+
+            RegulationAlert summaryAlert = new RegulationAlert();
+            summaryAlert.setUser(contract.getUser());
+            summaryAlert.setContract(contract);
+            // Use the first matched regulation for the summary alert
+            summaryAlert.setRegulation(matchedRegulations.iterator().next());
+            summaryAlert.setMessage(summaryMsg);
+            alertRepository.save(summaryAlert);
+
+            // 2. Per-regulation alerts for each matched regulation
+            for (Regulation reg : matchedRegulations) {
+                RegulationAlert regAlert = new RegulationAlert();
+                regAlert.setUser(contract.getUser());
+                regAlert.setContract(contract);
+                regAlert.setRegulation(reg);
+                regAlert.setMessage(String.format("'%s'에서 '%s' 관련 위반 가능성이 감지되었습니다. 해당 조항을 확인하세요.",
+                        contract.getFilename(), reg.getName()));
+                alertRepository.save(regAlert);
+            }
+
+            log.info("Created {} alerts for contract {}", matchedRegulations.size() + 1, contract.getFilename());
+        } catch (Exception e) {
+            log.error("Failed to create analysis alerts for contract {}", contract.getId(), e);
         }
     }
 
@@ -152,6 +219,7 @@ public class ContractService {
             throw new IllegalStateException("이미 분석 중입니다.");
         }
         riskRepository.deleteByContractId(contract.getId());
+        alertRepository.deleteByContractId(contract.getId());
         contract.setStatus(Contract.AnalysisStatus.ANALYZING);
         contractRepository.save(contract);
         return contract;
@@ -163,6 +231,18 @@ public class ContractService {
         alertRepository.deleteByContractId(contract.getId());
         riskRepository.deleteByContractId(contract.getId());
         contractRepository.delete(contract);
+        contractRepository.flush();
+        resetSequences();
+    }
+
+    @Transactional
+    public void deleteAll(String userEmail) {
+        List<Contract> contracts = contractRepository.findByUserEmailOrderByCreatedAtDesc(userEmail);
+        for (Contract contract : contracts) {
+            alertRepository.deleteByContractId(contract.getId());
+            riskRepository.deleteByContractId(contract.getId());
+            contractRepository.delete(contract);
+        }
         contractRepository.flush();
         resetSequences();
     }

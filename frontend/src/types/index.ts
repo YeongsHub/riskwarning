@@ -1,8 +1,19 @@
+export type Industry = 'GENERAL' | 'REAL_ESTATE' | 'EMPLOYMENT' | 'IT_SAAS' | 'FINANCE'
+
+export const INDUSTRY_LABELS: Record<Industry, string> = {
+  GENERAL: '일반 (전체 규제)',
+  REAL_ESTATE: '부동산',
+  EMPLOYMENT: '근로/고용',
+  IT_SAAS: 'IT/SaaS',
+  FINANCE: '금융',
+}
+
 export interface Contract {
   id: number
   filename: string
   status: string
   message: string
+  industry?: Industry
 }
 
 export interface User {

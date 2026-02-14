@@ -27,9 +27,11 @@ public class ContractController {
     private final AnalysisProgressEmitter progressEmitter;
 
     @PostMapping
-    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, Principal principal) {
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file,
+                                     @RequestParam(defaultValue = "GENERAL") String industry,
+                                     Principal principal) {
         try {
-            Contract contract = contractService.uploadAndStartAnalysis(file, principal.getName());
+            Contract contract = contractService.uploadAndStartAnalysis(file, principal.getName(), industry);
             contractService.analyzeAsync(contract.getId());
             return ResponseEntity.ok(Map.of(
                     "id", contract.getId(),
@@ -77,6 +79,12 @@ public class ContractController {
     public ResponseEntity<?> delete(@PathVariable Long id, Principal principal) {
         contractService.delete(id, principal.getName());
         return ResponseEntity.ok(Map.of("message", "Contract deleted"));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteAll(Principal principal) {
+        contractService.deleteAll(principal.getName());
+        return ResponseEntity.ok(Map.of("message", "All contracts deleted"));
     }
 
     @GetMapping("/{id}/risks")

@@ -1,4 +1,4 @@
-import type { Contract, Risk, RiskDetail, ContractSummary, ContractDetail, DashboardStats, NegotiationGuide, RegulationAlert, UnreadCount } from '../types'
+import type { Contract, Risk, RiskDetail, ContractSummary, ContractDetail, DashboardStats, NegotiationGuide, RegulationAlert, UnreadCount, Industry } from '../types'
 
 const API_BASE = '/api'
 
@@ -26,9 +26,10 @@ async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Re
   return response
 }
 
-export async function uploadContract(file: File): Promise<Contract> {
+export async function uploadContract({ file, industry = 'GENERAL' }: { file: File; industry?: Industry }): Promise<Contract> {
   const formData = new FormData()
   formData.append('file', file)
+  formData.append('industry', industry)
 
   const response = await fetchWithAuth(`${API_BASE}/contracts`, {
     method: 'POST',
@@ -69,6 +70,16 @@ export async function deleteContract(id: number): Promise<void> {
 
   if (!response.ok) {
     throw new Error('Failed to delete contract')
+  }
+}
+
+export async function deleteAllContracts(): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE}/contracts`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to delete all contracts')
   }
 }
 

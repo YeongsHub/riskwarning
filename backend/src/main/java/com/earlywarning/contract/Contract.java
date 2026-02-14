@@ -34,6 +34,8 @@ public class Contract {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    private String industry = "GENERAL";
+
     public enum AnalysisStatus {
         ANALYZING, COMPLETED, FAILED
     }

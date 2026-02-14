@@ -33,4 +33,6 @@ public class Regulation {
 
     @Column(name = "content_hash")
     private String contentHash;
+
+    private String category;
 }

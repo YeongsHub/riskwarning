@@ -119,7 +119,7 @@ export default function RiskDetailModal({
                 </div>
 
                 {risk.suggestion && (
-                  <div>
+                  <div className="mb-4">
                     <h3 className="text-xs sm:text-sm font-semibold text-gray-500 mb-2">
                       AI 수정 제안
                     </h3>

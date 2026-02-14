@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getContracts, getContract, deleteContract } from '../api/client'
+import { getContracts, getContract, deleteContract, deleteAllContracts } from '../api/client'
 
 export function useContracts() {
   return useQuery({
@@ -23,6 +23,18 @@ export function useDeleteContract() {
     mutationFn: deleteContract,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contracts'] })
+    },
+  })
+}
+
+export function useDeleteAllContracts() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: deleteAllContracts,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contracts'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     },
   })
 }

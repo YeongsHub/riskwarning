@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useContracts, useDeleteContract } from '../hooks/useContracts'
+import { useContracts, useDeleteContract, useDeleteAllContracts } from '../hooks/useContracts'
 import { useReanalyze } from '../hooks/useReanalyze'
 import Pagination from '../components/Pagination'
 
@@ -10,6 +10,7 @@ export default function ContractsPage() {
   const navigate = useNavigate()
   const { data: contracts, isLoading, isError } = useContracts()
   const deleteMutation = useDeleteContract()
+  const deleteAllMutation = useDeleteAllContracts()
   const reanalyzeMutation = useReanalyze()
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -26,7 +27,17 @@ export default function ContractsPage() {
 
   const handleDelete = (id: number, filename: string) => {
     if (window.confirm(`"${filename}"을(를) 삭제하시겠습니까?`)) {
-      deleteMutation.mutate(id)
+      deleteMutation.mutate(id, {
+        onSuccess: () => setCurrentPage(1),
+      })
+    }
+  }
+
+  const handleDeleteAll = () => {
+    if (window.confirm('모든 계약서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+      deleteAllMutation.mutate(undefined, {
+        onSuccess: () => setCurrentPage(1),
+      })
     }
   }
 
@@ -55,12 +66,23 @@ export default function ContractsPage() {
             총 {contracts?.length || 0}건의 계약서가 분석되었습니다.
           </p>
         </div>
-        <Link
-          to="/"
-          className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
-        >
-          새 분석
-        </Link>
+        <div className="flex gap-2">
+          {contracts && contracts.length > 0 && (
+            <button
+              onClick={handleDeleteAll}
+              disabled={deleteAllMutation.isPending}
+              className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg disabled:opacity-50"
+            >
+              {deleteAllMutation.isPending ? '삭제 중...' : '전체 삭제'}
+            </button>
+          )}
+          <Link
+            to="/"
+            className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
+          >
+            새 분석
+          </Link>
+        </div>
       </div>
 
       {paginatedContracts && paginatedContracts.length > 0 ? (

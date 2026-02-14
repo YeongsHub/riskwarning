@@ -1,13 +1,17 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FileUpload from '../components/FileUpload'
 import { useContractUpload } from '../hooks/useContractUpload'
+import type { Industry } from '../types'
+import { INDUSTRY_LABELS } from '../types'
 
 export default function UploadPage() {
   const navigate = useNavigate()
   const uploadMutation = useContractUpload()
+  const [industry, setIndustry] = useState<Industry>('GENERAL')
 
   const handleUpload = (file: File) => {
-    uploadMutation.mutate(file, {
+    uploadMutation.mutate({ file, industry }, {
       onSuccess: (contract) => {
         navigate(`/result/${contract.id}`)
       },
@@ -23,6 +27,31 @@ export default function UploadPage() {
         <p className="text-gray-500">
           계약서를 업로드하면 AI가 법적 위험을 자동으로 감지하고 규제 위반 가능성을 분석합니다.
         </p>
+      </div>
+
+      {/* Industry Selection */}
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          산업 분야 선택
+        </label>
+        <p className="text-xs text-gray-400 mb-3">
+          산업을 선택하면 해당 분야에 특화된 규제만 집중 분석합니다.
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          {(Object.entries(INDUSTRY_LABELS) as [Industry, string][]).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setIndustry(key)}
+              className={`px-3 py-2.5 rounded-lg text-sm font-medium border-2 transition-all ${
+                industry === key
+                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <FileUpload onUpload={handleUpload} isLoading={uploadMutation.isPending} />
