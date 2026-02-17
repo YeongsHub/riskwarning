@@ -36,6 +36,8 @@ public class Contract {
 
     private String industry = "GENERAL";
 
+    private String language = "ko";
+
     public enum AnalysisStatus {
         ANALYZING, COMPLETED, FAILED
     }
