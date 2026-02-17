@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useContracts, useDeleteContract, useDeleteAllContracts } from '../hooks/useContracts'
 import { useReanalyze } from '../hooks/useReanalyze'
 import Pagination from '../components/Pagination'
@@ -13,12 +14,14 @@ export default function ContractsPage() {
   const deleteAllMutation = useDeleteAllContracts()
   const reanalyzeMutation = useReanalyze()
   const [currentPage, setCurrentPage] = useState(1)
+  const { t, i18n } = useTranslation()
+  const dateLocale = i18n.language === 'ko' ? 'ko-KR' : 'en-US'
 
   const totalPages = Math.ceil((contracts?.length || 0) / PAGE_SIZE)
   const paginatedContracts = contracts?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   const handleReanalyze = (id: number) => {
-    if (window.confirm('최신 규제 DB로 재분석하시겠습니까?')) {
+    if (window.confirm(t('contracts.confirmReanalyze'))) {
       reanalyzeMutation.mutate(id, {
         onSuccess: () => navigate(`/result/${id}`),
       })
@@ -26,7 +29,7 @@ export default function ContractsPage() {
   }
 
   const handleDelete = (id: number, filename: string) => {
-    if (window.confirm(`"${filename}"을(를) 삭제하시겠습니까?`)) {
+    if (window.confirm(t('contracts.confirmDelete', { filename }))) {
       deleteMutation.mutate(id, {
         onSuccess: () => setCurrentPage(1),
       })
@@ -34,7 +37,7 @@ export default function ContractsPage() {
   }
 
   const handleDeleteAll = () => {
-    if (window.confirm('모든 계약서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+    if (window.confirm(t('contracts.confirmDeleteAll'))) {
       deleteAllMutation.mutate(undefined, {
         onSuccess: () => setCurrentPage(1),
       })
@@ -52,7 +55,7 @@ export default function ContractsPage() {
   if (isError) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600">Failed to load contracts.</p>
+        <p className="text-red-600">{t('contracts.loadError')}</p>
       </div>
     )
   }
@@ -61,9 +64,9 @@ export default function ContractsPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">분석 이력</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('contracts.title')}</h2>
           <p className="text-gray-600">
-            총 {contracts?.length || 0}건의 계약서가 분석되었습니다.
+            {t('contracts.totalCount', { count: contracts?.length || 0 })}
           </p>
         </div>
         <div className="flex gap-2">
@@ -73,14 +76,14 @@ export default function ContractsPage() {
               disabled={deleteAllMutation.isPending}
               className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg disabled:opacity-50"
             >
-              {deleteAllMutation.isPending ? '삭제 중...' : '전체 삭제'}
+              {deleteAllMutation.isPending ? t('contracts.deletingAll') : t('contracts.deleteAll')}
             </button>
           )}
           <Link
             to="/"
             className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
           >
-            새 분석
+            {t('contracts.newAnalysis')}
           </Link>
         </div>
       </div>
@@ -102,7 +105,7 @@ export default function ContractsPage() {
                       {contract.filename}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      {new Date(contract.createdAt).toLocaleDateString('ko-KR', {
+                      {new Date(contract.createdAt).toLocaleDateString(dateLocale, {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -112,12 +115,12 @@ export default function ContractsPage() {
                     </p>
                     {contract.status === 'ANALYZING' && (
                       <span className="inline-block mt-2 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded">
-                        분석 중...
+                        {t('contracts.analyzing')}
                       </span>
                     )}
                     {contract.status === 'FAILED' && (
                       <span className="inline-block mt-2 px-2 py-1 text-xs bg-red-100 text-red-700 rounded">
-                        분석 실패
+                        {t('contracts.failed')}
                       </span>
                     )}
                     {contract.status === 'COMPLETED' && (
@@ -141,7 +144,7 @@ export default function ContractsPage() {
                           contract.riskSummary.medium === 0 &&
                           contract.riskSummary.low === 0 && (
                             <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
-                              위험 없음
+                              {t('contracts.noRisk')}
                             </span>
                           )}
                       </div>
@@ -154,7 +157,7 @@ export default function ContractsPage() {
                         disabled={reanalyzeMutation.isPending}
                         className="text-sm text-gray-400 hover:text-amber-600"
                       >
-                        재분석
+                        {t('contracts.reanalyze')}
                       </button>
                     )}
                     <button
@@ -162,7 +165,7 @@ export default function ContractsPage() {
                       disabled={deleteMutation.isPending}
                       className="text-sm text-gray-400 hover:text-red-500"
                     >
-                      삭제
+                      {t('contracts.delete')}
                     </button>
                   </div>
                 </div>
@@ -173,9 +176,9 @@ export default function ContractsPage() {
         </>
       ) : (
         <div className="text-center py-12 text-gray-500">
-          <p>분석된 계약서가 없습니다.</p>
+          <p>{t('contracts.empty')}</p>
           <Link to="/" className="text-blue-500 hover:underline mt-2 inline-block">
-            첫 계약서를 분석해보세요
+            {t('contracts.emptyAction')}
           </Link>
         </div>
       )}

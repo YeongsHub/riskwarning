@@ -5,6 +5,7 @@ import com.earlywarning.alert.AlertService;
 import com.earlywarning.alert.RegulationAlert;
 import com.earlywarning.auth.User;
 import com.earlywarning.auth.UserRepository;
+import com.earlywarning.common.LanguageDetector;
 import com.earlywarning.common.OpenAiClient;
 import com.earlywarning.common.TextChunker;
 import com.earlywarning.regulation.Regulation;
@@ -58,8 +59,7 @@ public class ContractService {
     private static final Map<String, List<String>> INDUSTRY_CATEGORIES = Map.of(
             "REAL_ESTATE", List.of("약관규제", "소비자보호", "공정거래위원회"),
             "EMPLOYMENT", List.of("고용노동부", "약관규제", "공정거래위원회"),
-            "IT_SAAS", List.of("약관규제", "소비자보호", "개인정보보호", "정보통신", "개인정보보호위원회", "공정거래위원회", "Data Protection", "Consumer Rights"),
-            "FINANCE", List.of("금융감독원", "소비자보호", "약관규제", "공정거래위원회", "Payment Security")
+            "TAX_ACCOUNTING", List.of("국세청", "약관규제", "공정거래위원회", "소비자보호")
     );
 
     @Transactional
@@ -74,6 +74,7 @@ public class ContractService {
         contract.setContent(content);
         contract.setUser(user);
         contract.setIndustry(industry);
+        contract.setLanguage(LanguageDetector.detect(content));
         contract.setStatus(Contract.AnalysisStatus.ANALYZING);
         contractRepository.save(contract);
 
@@ -86,7 +87,11 @@ public class ContractService {
             Contract contract = contractRepository.findById(contractId)
                     .orElseThrow(() -> new IllegalArgumentException("Contract not found: " + contractId));
 
-            progressEmitter.send(contractId, "EXTRACTING", "텍스트 추출 중...", 0, 0);
+            String lang = contract.getLanguage() != null ? contract.getLanguage() : "ko";
+            boolean isEn = "en".equals(lang);
+
+            progressEmitter.send(contractId, "EXTRACTING",
+                    isEn ? "Extracting text..." : "텍스트 추출 중...", 0, 0);
 
             List<String> chunks = textChunker.chunk(contract.getContent());
             int totalChunks = chunks.size();
@@ -95,7 +100,8 @@ public class ContractService {
             String industry = contract.getIndustry() != null ? contract.getIndustry() : "GENERAL";
             List<String> categories = INDUSTRY_CATEGORIES.get(industry);
 
-            progressEmitter.send(contractId, "CHUNKING", "텍스트 분석 중...", 0, totalChunks);
+            progressEmitter.send(contractId, "CHUNKING",
+                    isEn ? "Analyzing text..." : "텍스트 분석 중...", 0, totalChunks);
 
             // Track matched regulations for alert creation
             Set<Regulation> allMatchedRegulations = new LinkedHashSet<>();
@@ -108,7 +114,8 @@ public class ContractService {
                 String embeddingStr = Arrays.toString(embedding);
 
                 progressEmitter.send(contractId, "ANALYZING",
-                        "규제 비교 중... (" + (i + 1) + "/" + totalChunks + ")",
+                        isEn ? "Comparing regulations... (" + (i + 1) + "/" + totalChunks + ")"
+                              : "규제 비교 중... (" + (i + 1) + "/" + totalChunks + ")",
                         i + 1, totalChunks);
 
                 List<Regulation> matchedRegs;
@@ -128,10 +135,11 @@ public class ContractService {
                             .toList();
 
                     progressEmitter.send(contractId, "EVALUATING",
-                            "위험도 평가 중... (" + (i + 1) + "/" + totalChunks + ")",
+                            isEn ? "Evaluating risk... (" + (i + 1) + "/" + totalChunks + ")"
+                                  : "위험도 평가 중... (" + (i + 1) + "/" + totalChunks + ")",
                             i + 1, totalChunks);
 
-                    OpenAiClient.RiskAnalysis analysis = openAiClient.analyzeRisk(chunk, regNames);
+                    OpenAiClient.RiskAnalysis analysis = openAiClient.analyzeRisk(chunk, regNames, lang);
 
                     if (!"NONE".equals(analysis.level())) {
                         Risk risk = new Risk();
@@ -153,9 +161,10 @@ public class ContractService {
             contractRepository.save(contract);
 
             // Create alerts for detected risks
-            createAnalysisAlerts(contract, allMatchedRegulations, riskCount, highCount);
+            createAnalysisAlerts(contract, allMatchedRegulations, riskCount, highCount, lang);
 
-            progressEmitter.send(contractId, "COMPLETED", "분석 완료", totalChunks, totalChunks);
+            progressEmitter.send(contractId, "COMPLETED",
+                    isEn ? "Analysis complete" : "분석 완료", totalChunks, totalChunks);
             progressEmitter.complete(contractId);
 
         } catch (Exception e) {
@@ -164,19 +173,27 @@ public class ContractService {
                 c.setStatus(Contract.AnalysisStatus.FAILED);
                 contractRepository.save(c);
             });
-            progressEmitter.send(contractId, "FAILED", "분석 실패: " + e.getMessage(), 0, 0);
+            progressEmitter.send(contractId, "FAILED", "Analysis failed: " + e.getMessage(), 0, 0);
             progressEmitter.complete(contractId);
         }
     }
 
-    private void createAnalysisAlerts(Contract contract, Set<Regulation> matchedRegulations, int riskCount, int highCount) {
+    private void createAnalysisAlerts(Contract contract, Set<Regulation> matchedRegulations, int riskCount, int highCount, String language) {
         try {
             if (riskCount == 0) return;
+            boolean isEn = "en".equals(language);
 
             // 1. Summary alert
-            String severity = highCount > 0 ? "긴급" : "주의";
-            String summaryMsg = String.format("[%s] '%s' 분석 완료: %d건의 위험 조항 감지 (HIGH %d건). 즉시 검토가 필요합니다.",
-                    severity, contract.getFilename(), riskCount, highCount);
+            String summaryMsg;
+            if (isEn) {
+                String severity = highCount > 0 ? "URGENT" : "WARNING";
+                summaryMsg = String.format("[%s] '%s' analysis complete: %d risky clauses detected (HIGH %d). Immediate review required.",
+                        severity, contract.getFilename(), riskCount, highCount);
+            } else {
+                String severity = highCount > 0 ? "긴급" : "주의";
+                summaryMsg = String.format("[%s] '%s' 분석 완료: %d건의 위험 조항 감지 (HIGH %d건). 즉시 검토가 필요합니다.",
+                        severity, contract.getFilename(), riskCount, highCount);
+            }
 
             RegulationAlert summaryAlert = new RegulationAlert();
             summaryAlert.setUser(contract.getUser());
@@ -192,8 +209,12 @@ public class ContractService {
                 regAlert.setUser(contract.getUser());
                 regAlert.setContract(contract);
                 regAlert.setRegulation(reg);
-                regAlert.setMessage(String.format("'%s'에서 '%s' 관련 위반 가능성이 감지되었습니다. 해당 조항을 확인하세요.",
-                        contract.getFilename(), reg.getName()));
+                String alertMsg = isEn
+                        ? String.format("Potential violation of '%s' detected in '%s'. Please review the relevant clauses.",
+                                reg.getName(), contract.getFilename())
+                        : String.format("'%s'에서 '%s' 관련 위반 가능성이 감지되었습니다. 해당 조항을 확인하세요.",
+                                contract.getFilename(), reg.getName());
+                regAlert.setMessage(alertMsg);
                 alertRepository.save(regAlert);
             }
 

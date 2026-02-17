@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useRegister } from '../hooks/useRegister'
 
 export default function RegisterPage() {
@@ -7,6 +8,13 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const { mutate, isPending, error } = useRegister()
+  const { t, i18n } = useTranslation()
+
+  const toggleLanguage = () => {
+    const next = i18n.language === 'ko' ? 'en' : 'ko'
+    i18n.changeLanguage(next)
+    localStorage.setItem('language', next)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -14,7 +22,13 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative">
+      <button
+        onClick={toggleLanguage}
+        className="absolute top-4 right-4 text-xs px-3 py-1.5 rounded border border-white/30 text-white/70 hover:text-white hover:border-white/60 transition font-medium"
+      >
+        {i18n.language === 'ko' ? 'EN' : 'KO'}
+      </button>
       <div className="max-w-md w-full mx-4">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-500/20 backdrop-blur mb-4">
@@ -27,7 +41,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">회원가입</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('register.title')}</h2>
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
@@ -39,28 +53,28 @@ export default function RegisterPage() {
               </div>
             )}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">이름</label>
-              <input id="name" type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="홍길동" className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" />
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">{t('register.name')}</label>
+              <input id="name" type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder={t('register.namePlaceholder')} className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{t('register.email')}</label>
               <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
-              <input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="6자 이상" className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" />
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">{t('register.password')}</label>
+              <input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('register.passwordPlaceholder')} className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" />
             </div>
             <button type="submit" disabled={isPending} className="w-full py-2.5 px-4 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition">
               {isPending ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                  생성 중...
+                  {t('register.loading')}
                 </span>
-              ) : '회원가입'}
+              ) : t('register.submit')}
             </button>
             <div className="text-center text-sm">
-              <span className="text-gray-500">이미 계정이 있으신가요? </span>
-              <Link to="/login" className="text-blue-600 hover:text-blue-500 font-medium">로그인</Link>
+              <span className="text-gray-500">{t('register.hasAccount')} </span>
+              <Link to="/login" className="text-blue-600 hover:text-blue-500 font-medium">{t('register.login')}</Link>
             </div>
           </form>
         </div>

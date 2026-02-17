@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { Risk } from '../types'
 import { RISK_COLORS } from '../types'
 
@@ -7,6 +8,8 @@ interface RiskCardProps {
 }
 
 export default function RiskCard({ risk, onClick }: RiskCardProps) {
+  const { t } = useTranslation()
+
   const levelLabel = {
     HIGH: 'HIGH RISK',
     MEDIUM: 'MEDIUM',
@@ -32,7 +35,7 @@ export default function RiskCard({ risk, onClick }: RiskCardProps) {
         >
           {levelLabel[risk.level]}
         </span>
-        <span className="text-xs text-gray-400">상세 보기 &rarr;</span>
+        <span className="text-xs text-gray-400">{t('riskCard.viewDetail')} &rarr;</span>
       </div>
       <p className="text-sm text-gray-700 line-clamp-2">{risk.clause}</p>
     </div>

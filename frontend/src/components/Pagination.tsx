@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 interface PaginationProps {
   currentPage: number
   totalPages: number
@@ -5,6 +7,8 @@ interface PaginationProps {
 }
 
 export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+  const { t } = useTranslation()
+
   if (totalPages <= 1) return null
 
   const pages: (number | '...')[] = []
@@ -27,7 +31,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
         disabled={currentPage === 1}
         className="px-3 py-1.5 text-sm rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
       >
-        &larr; 이전
+        &larr; {t('pagination.prev')}
       </button>
       {pages.map((page, i) =>
         page === '...' ? (
@@ -51,7 +55,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
         disabled={currentPage === totalPages}
         className="px-3 py-1.5 text-sm rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
       >
-        다음 &rarr;
+        {t('pagination.next')} &rarr;
       </button>
     </div>
   )

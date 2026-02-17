@@ -1,0 +1,144 @@
+{
+  "nav": {
+    "newAnalysis": "새 분석",
+    "dashboard": "대시보드",
+    "contracts": "분석 이력",
+    "logout": "로그아웃"
+  },
+  "login": {
+    "title": "로그인",
+    "email": "이메일",
+    "password": "비밀번호",
+    "submit": "로그인",
+    "loading": "로그인 중...",
+    "noAccount": "계정이 없으신가요?",
+    "register": "회원가입",
+    "error": "이메일 또는 비밀번호가 올바르지 않습니다."
+  },
+  "register": {
+    "title": "회원가입",
+    "name": "이름",
+    "namePlaceholder": "홍길동",
+    "email": "이메일",
+    "password": "비밀번호",
+    "passwordPlaceholder": "6자 이상",
+    "submit": "회원가입",
+    "loading": "생성 중...",
+    "hasAccount": "이미 계정이 있으신가요?",
+    "login": "로그인",
+    "error": "회원가입에 실패했습니다."
+  },
+  "upload": {
+    "title": "새 계약서 분석",
+    "description": "계약서를 업로드하면 AI가 법적 위험을 자동으로 감지하고 규제 위반 가능성을 분석합니다.",
+    "industryLabel": "산업 분야 선택",
+    "industryHint": "산업을 선택하면 해당 분야에 특화된 규제만 집중 분석합니다.",
+    "uploadError": "업로드 중 오류가 발생했습니다. 다시 시도해주세요.",
+    "featureAiTitle": "AI 위험 분석",
+    "featureAiDesc": "GPT-4o 기반 법적 위험 자동 감지 및 규제 매칭",
+    "featureNegotiationTitle": "협상 가이드",
+    "featureNegotiationDesc": "갑/을 양측 관점의 AI 협상 포인트 자동 생성",
+    "featureAlertTitle": "규제 알림",
+    "featureAlertDesc": "규제 변경 시 영향받는 계약서 자동 알림",
+    "disclaimer": "EarlyWarning은 의사결정 보조 도구입니다. 최종 판단은 항상 사용자에게 있습니다.",
+    "industry": {
+      "GENERAL": "일반 (전체 규제)",
+      "REAL_ESTATE": "부동산",
+      "EMPLOYMENT": "근로/고용",
+      "TAX_ACCOUNTING": "세무/회계"
+    }
+  },
+  "fileUpload": {
+    "analyzing": "계약서 분석 시작 중...",
+    "wait": "잠시만 기다려주세요",
+    "dragOrClick": "계약서 파일을 드래그하거나 클릭하여 업로드",
+    "supportedFormats": "PDF, TXT 파일 지원",
+    "selectFile": "파일 선택"
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "subtitle": "전체 계약서의 위험 통계를 한눈에 확인하세요.",
+    "loadError": "통계를 불러오지 못했습니다.",
+    "totalContracts": "총 계약서",
+    "totalRisks": "총 위험",
+    "riskDistribution": "위험 수준 분포",
+    "emptyChart": "계약서를 분석하면 위험 통계가 표시됩니다.",
+    "recentAnalysis": "최근 분석",
+    "viewAll": "전체 보기",
+    "statusCompleted": "완료",
+    "statusAnalyzing": "분석 중",
+    "statusFailed": "실패",
+    "emptyRecent": "아직 분석된 계약서가 없습니다."
+  },
+  "contracts": {
+    "title": "분석 이력",
+    "totalCount": "총 {{count}}건의 계약서가 분석되었습니다.",
+    "deleteAll": "전체 삭제",
+    "deletingAll": "삭제 중...",
+    "newAnalysis": "새 분석",
+    "confirmReanalyze": "최신 규제 DB로 재분석하시겠습니까?",
+    "confirmDelete": "\"{{filename}}\"을(를) 삭제하시겠습니까?",
+    "confirmDeleteAll": "모든 계약서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    "analyzing": "분석 중...",
+    "failed": "분석 실패",
+    "noRisk": "위험 없음",
+    "reanalyze": "재분석",
+    "delete": "삭제",
+    "empty": "분석된 계약서가 없습니다.",
+    "emptyAction": "첫 계약서를 분석해보세요",
+    "loadError": "계약서를 불러오지 못했습니다."
+  },
+  "result": {
+    "analyzingTitle": "분석 진행 중",
+    "contracts": "분석 이력",
+    "failedMessage": "분석에 실패했습니다.",
+    "reanalyze": "재분석",
+    "reanalyzing": "재분석 시작 중...",
+    "reupload": "다시 업로드",
+    "loadError": "위험 정보를 불러오지 못했습니다.",
+    "uploadAgain": "다시 업로드",
+    "title": "분석 결과",
+    "riskCount": "총 {{count}}건의 위험이 감지되었습니다.",
+    "downloadPdf": "PDF 리포트",
+    "downloading": "다운로드 중...",
+    "downloadError": "PDF 리포트 다운로드에 실패했습니다.",
+    "newAnalysis": "새 분석",
+    "tabRisks": "위험 목록",
+    "tabDocument": "문서 뷰",
+    "confirmReanalyze": "최신 규제 DB로 재분석하시겠습니까?"
+  },
+  "alerts": {
+    "title": "알림",
+    "markAllRead": "모두 읽음",
+    "empty": "알림이 없습니다."
+  },
+  "riskCard": {
+    "viewDetail": "상세 보기"
+  },
+  "pagination": {
+    "prev": "이전",
+    "next": "다음"
+  },
+  "analysisProgress": {
+    "extracting": "텍스트 추출",
+    "chunking": "텍스트 분석",
+    "analyzing": "규제 비교",
+    "evaluating": "위험도 평가",
+    "completed": "분석 완료"
+  },
+  "riskDetail": {
+    "tabDetail": "위험 상세",
+    "tabNegotiation": "협상 가이드",
+    "riskyClause": "위험 조항",
+    "potentialViolation": "위반 가능성",
+    "aiSuggestion": "AI 수정 제안",
+    "gapPerspective": "갑 관점",
+    "eulPerspective": "을 관점",
+    "alternativeClauses": "대안 조항",
+    "riskIfUnchanged": "미수정시 위험",
+    "guideError": "협상 가이드를 불러올 수 없습니다."
+  },
+  "contractViewer": {
+    "unmatchedRisks": "문서에서 위치를 찾을 수 없는 위험 ({{count}}건)"
+  }
+}

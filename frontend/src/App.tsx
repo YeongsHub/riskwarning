@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import './i18n'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import UploadPage from './pages/UploadPage'
@@ -27,8 +29,26 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   )
 }
 
+function LanguageToggle() {
+  const { i18n } = useTranslation()
+  const toggleLanguage = () => {
+    const next = i18n.language === 'ko' ? 'en' : 'ko'
+    i18n.changeLanguage(next)
+    localStorage.setItem('language', next)
+  }
+  return (
+    <button
+      onClick={toggleLanguage}
+      className="text-xs px-2 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 transition font-medium"
+    >
+      {i18n.language === 'ko' ? 'EN' : 'KO'}
+    </button>
+  )
+}
+
 function AppContent() {
   const { isAuthenticated, user, logout } = useAuth()
+  const { t } = useTranslation()
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -47,20 +67,21 @@ function AppContent() {
                 </div>
               </Link>
               <nav className="flex gap-1">
-                <NavLink to="/">새 분석</NavLink>
-                <NavLink to="/dashboard">대시보드</NavLink>
-                <NavLink to="/contracts">분석 이력</NavLink>
+                <NavLink to="/">{t('nav.newAnalysis')}</NavLink>
+                <NavLink to="/dashboard">{t('nav.dashboard')}</NavLink>
+                <NavLink to="/contracts">{t('nav.contracts')}</NavLink>
               </nav>
             </div>
             <div className="flex items-center gap-3">
               <AlertBell />
               <div className="h-4 w-px bg-gray-200" />
+              <LanguageToggle />
               <span className="text-sm text-gray-600">{user?.name}</span>
               <button
                 onClick={logout}
                 className="text-sm text-gray-400 hover:text-gray-600 transition"
               >
-                로그아웃
+                {t('nav.logout')}
               </button>
             </div>
           </div>

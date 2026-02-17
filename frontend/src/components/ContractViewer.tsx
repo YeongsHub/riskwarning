@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Risk, RiskLevel } from '../types'
 
 interface ContractViewerProps {
@@ -81,6 +82,7 @@ function findClausePosition(content: string, clause: string): { start: number; e
 }
 
 export default function ContractViewer({ content, risks, onRiskClick }: ContractViewerProps) {
+  const { t } = useTranslation()
   const { segments, unmatchedRisks } = useMemo(() => {
     if (!content || risks.length === 0) {
       return { segments: [{ text: content }] as Segment[], unmatchedRisks: [] as Risk[] }
@@ -165,7 +167,7 @@ export default function ContractViewer({ content, risks, onRiskClick }: Contract
 
       {unmatchedRisks.length > 0 && (
         <div className="mt-4 space-y-2">
-          <p className="text-xs font-medium text-gray-500">문서에서 위치를 찾을 수 없는 위험 ({unmatchedRisks.length}건)</p>
+          <p className="text-xs font-medium text-gray-500">{t('contractViewer.unmatchedRisks', { count: unmatchedRisks.length })}</p>
           {unmatchedRisks.map((risk) => (
             <div
               key={risk.id}

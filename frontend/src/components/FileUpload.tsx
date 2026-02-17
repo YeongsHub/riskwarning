@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface FileUploadProps {
   onUpload: (file: File) => void
@@ -7,6 +8,7 @@ interface FileUploadProps {
 
 export default function FileUpload({ onUpload, isLoading }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false)
+  const { t } = useTranslation()
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -51,8 +53,8 @@ export default function FileUpload({ onUpload, isLoading }: FileUploadProps) {
       {isLoading ? (
         <div className="flex flex-col items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4" />
-          <p className="text-gray-600 font-medium">계약서 분석 시작 중...</p>
-          <p className="text-sm text-gray-400 mt-1">잠시만 기다려주세요</p>
+          <p className="text-gray-600 font-medium">{t('fileUpload.analyzing')}</p>
+          <p className="text-sm text-gray-400 mt-1">{t('fileUpload.wait')}</p>
         </div>
       ) : (
         <>
@@ -62,9 +64,9 @@ export default function FileUpload({ onUpload, isLoading }: FileUploadProps) {
             </svg>
           </div>
           <p className="text-gray-700 font-medium mb-1">
-            계약서 파일을 드래그하거나 클릭하여 업로드
+            {t('fileUpload.dragOrClick')}
           </p>
-          <p className="text-sm text-gray-400 mb-4">PDF, TXT 파일 지원</p>
+          <p className="text-sm text-gray-400 mb-4">{t('fileUpload.supportedFormats')}</p>
           <input
             type="file"
             accept=".pdf,.txt"
@@ -76,7 +78,7 @@ export default function FileUpload({ onUpload, isLoading }: FileUploadProps) {
             htmlFor="file-upload"
             className="inline-block px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer font-medium transition"
           >
-            파일 선택
+            {t('fileUpload.selectFile')}
           </label>
         </>
       )}

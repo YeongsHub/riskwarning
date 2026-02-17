@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useStatistics } from '../hooks/useStatistics'
 
 function DonutChart({ high, medium, low }: { high: number; medium: number; low: number }) {
+  const { t } = useTranslation()
   const total = high + medium + low
   if (total === 0) return null
 
@@ -41,7 +43,7 @@ function DonutChart({ high, medium, low }: { high: number; medium: number; low: 
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-3xl font-bold text-gray-900">{total}</span>
-          <span className="text-xs text-gray-500">총 위험</span>
+          <span className="text-xs text-gray-500">{t('dashboard.totalRisks')}</span>
         </div>
       </div>
       <div className="space-y-3">
@@ -64,6 +66,8 @@ function DonutChart({ high, medium, low }: { high: number; medium: number; low: 
 
 export default function DashboardPage() {
   const { data: stats, isLoading, isError } = useStatistics()
+  const { t, i18n } = useTranslation()
+  const dateLocale = i18n.language === 'ko' ? 'ko-KR' : 'en-US'
 
   if (isLoading) {
     return (
@@ -76,7 +80,7 @@ export default function DashboardPage() {
   if (isError || !stats) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600">통계를 불러오지 못했습니다.</p>
+        <p className="text-red-600">{t('dashboard.loadError')}</p>
       </div>
     )
   }
@@ -89,8 +93,8 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">대시보드</h2>
-        <p className="text-gray-500 mt-1">전체 계약서의 위험 통계를 한눈에 확인하세요.</p>
+        <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.title')}</h2>
+        <p className="text-gray-500 mt-1">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* Summary Cards */}
@@ -102,7 +106,7 @@ export default function DashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
             </div>
-            <p className="text-sm text-gray-500">총 계약서</p>
+            <p className="text-sm text-gray-500">{t('dashboard.totalContracts')}</p>
           </div>
           <p className="text-3xl font-bold text-gray-900">{totalContracts}</p>
         </div>
@@ -144,7 +148,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Donut Chart */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">위험 수준 분포</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('dashboard.riskDistribution')}</h3>
           {totalRisks > 0 ? (
             <DonutChart high={highCount} medium={mediumCount} low={lowCount} />
           ) : (
@@ -152,7 +156,7 @@ export default function DashboardPage() {
               <svg className="w-12 h-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 019 9v.375M10.125 2.25A3.375 3.375 0 0113.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 013.375 3.375M9 15l2.25 2.25L15 12" />
               </svg>
-              <p className="text-sm">계약서를 분석하면 위험 통계가 표시됩니다.</p>
+              <p className="text-sm">{t('dashboard.emptyChart')}</p>
             </div>
           )}
         </div>
@@ -160,9 +164,9 @@ export default function DashboardPage() {
         {/* Recent Contracts */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">최근 분석</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('dashboard.recentAnalysis')}</h3>
             <Link to="/contracts" className="text-sm text-blue-500 hover:text-blue-600 font-medium">
-              전체 보기 &rarr;
+              {t('dashboard.viewAll')} &rarr;
             </Link>
           </div>
           {recentContracts.length > 0 ? (
@@ -178,7 +182,7 @@ export default function DashboardPage() {
                       {contract.filename}
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {new Date(contract.createdAt).toLocaleDateString('ko-KR', {
+                      {new Date(contract.createdAt).toLocaleDateString(dateLocale, {
                         year: 'numeric', month: 'short', day: 'numeric',
                       })}
                     </p>
@@ -192,7 +196,7 @@ export default function DashboardPage() {
                         : 'bg-red-50 text-red-700'
                     }`}
                   >
-                    {contract.status === 'COMPLETED' ? '완료' : contract.status === 'ANALYZING' ? '분석 중' : '실패'}
+                    {contract.status === 'COMPLETED' ? t('dashboard.statusCompleted') : contract.status === 'ANALYZING' ? t('dashboard.statusAnalyzing') : t('dashboard.statusFailed')}
                   </span>
                 </Link>
               ))}
@@ -202,7 +206,7 @@ export default function DashboardPage() {
               <svg className="w-12 h-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 10.5v6m3-3H9m4.06-7.19l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
               </svg>
-              <p className="text-sm">아직 분석된 계약서가 없습니다.</p>
+              <p className="text-sm">{t('dashboard.emptyRecent')}</p>
             </div>
           )}
         </div>

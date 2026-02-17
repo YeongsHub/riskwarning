@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import RiskList from '../components/RiskList'
 import RiskDetailModal from '../components/RiskDetailModal'
 import ContractViewer from '../components/ContractViewer'
@@ -19,6 +20,7 @@ export default function ResultPage() {
   const [selectedRiskId, setSelectedRiskId] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState<Tab>('risks')
   const [isDownloading, setIsDownloading] = useState(false)
+  const { t } = useTranslation()
 
   const { data: contract } = useContract(id)
   const reanalyzeMutation = useReanalyze()
@@ -26,7 +28,7 @@ export default function ResultPage() {
   const isFailed = contract?.status === 'FAILED'
 
   const handleReanalyze = () => {
-    if (window.confirm('최신 규제 DB로 재분석하시겠습니까?')) {
+    if (window.confirm(t('result.confirmReanalyze'))) {
       reanalyzeMutation.mutate(id)
     }
   }
@@ -36,7 +38,7 @@ export default function ResultPage() {
     try {
       await downloadReport(id)
     } catch {
-      alert('PDF 리포트 다운로드에 실패했습니다.')
+      alert(t('result.downloadError'))
     } finally {
       setIsDownloading(false)
     }
@@ -50,12 +52,12 @@ export default function ResultPage() {
     return (
       <div>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">분석 진행 중</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('result.analyzingTitle')}</h2>
           <Link
             to="/contracts"
             className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
           >
-            분석 이력
+            {t('result.contracts')}
           </Link>
         </div>
         <AnalysisProgress progress={progress} />
@@ -66,17 +68,17 @@ export default function ResultPage() {
   if (isFailed) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 mb-4">분석에 실패했습니다.</p>
+        <p className="text-red-600 mb-4">{t('result.failedMessage')}</p>
         <div className="flex justify-center gap-3">
           <button
             onClick={handleReanalyze}
             disabled={reanalyzeMutation.isPending}
             className="px-4 py-2 text-sm bg-amber-500 hover:bg-amber-600 text-white rounded-lg disabled:opacity-50"
           >
-            {reanalyzeMutation.isPending ? '재분석 시작 중...' : '재분석'}
+            {reanalyzeMutation.isPending ? t('result.reanalyzing') : t('result.reanalyze')}
           </button>
           <Link to="/" className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">
-            다시 업로드
+            {t('result.reupload')}
           </Link>
         </div>
       </div>
@@ -94,9 +96,9 @@ export default function ResultPage() {
   if (isError) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 mb-4">Failed to load risk information.</p>
+        <p className="text-red-600 mb-4">{t('result.loadError')}</p>
         <Link to="/" className="text-blue-500 hover:underline">
-          Upload Again
+          {t('result.uploadAgain')}
         </Link>
       </div>
     )
@@ -106,9 +108,9 @@ export default function ResultPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">분석 결과</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('result.title')}</h2>
           <p className="text-gray-500">
-            총 {risks?.length || 0}건의 위험이 감지되었습니다.
+            {t('result.riskCount', { count: risks?.length || 0 })}
           </p>
         </div>
         <div className="flex gap-2">
@@ -117,26 +119,26 @@ export default function ResultPage() {
             disabled={isDownloading}
             className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg disabled:opacity-50"
           >
-            {isDownloading ? '다운로드 중...' : 'PDF 리포트'}
+            {isDownloading ? t('result.downloading') : t('result.downloadPdf')}
           </button>
           <button
             onClick={handleReanalyze}
             disabled={reanalyzeMutation.isPending}
             className="px-4 py-2 text-sm bg-amber-500 hover:bg-amber-600 text-white rounded-lg disabled:opacity-50"
           >
-            {reanalyzeMutation.isPending ? '재분석 시작 중...' : '재분석'}
+            {reanalyzeMutation.isPending ? t('result.reanalyzing') : t('result.reanalyze')}
           </button>
           <Link
             to="/contracts"
             className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
           >
-            분석 이력
+            {t('result.contracts')}
           </Link>
           <Link
             to="/"
             className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
           >
-            새 분석
+            {t('result.newAnalysis')}
           </Link>
         </div>
       </div>
@@ -151,7 +153,7 @@ export default function ResultPage() {
               : 'border-transparent text-gray-500 hover:text-gray-700'
           }`}
         >
-          위험 목록
+          {t('result.tabRisks')}
         </button>
         <button
           onClick={() => setActiveTab('document')}
@@ -161,7 +163,7 @@ export default function ResultPage() {
               : 'border-transparent text-gray-500 hover:text-gray-700'
           }`}
         >
-          문서 뷰
+          {t('result.tabDocument')}
         </button>
       </div>
 

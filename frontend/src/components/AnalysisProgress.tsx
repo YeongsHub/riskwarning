@@ -1,33 +1,36 @@
+import { useTranslation } from 'react-i18next'
 import type { AnalysisProgress as ProgressType } from '../types'
 
 interface AnalysisProgressProps {
   progress: ProgressType | null
 }
 
-const STEPS = [
-  { key: 'EXTRACTING', label: '텍스트 추출' },
-  { key: 'CHUNKING', label: '텍스트 분석' },
-  { key: 'ANALYZING', label: '규제 비교' },
-  { key: 'EVALUATING', label: '위험도 평가' },
-  { key: 'COMPLETED', label: '분석 완료' },
-] as const
+const STEP_KEYS = ['EXTRACTING', 'CHUNKING', 'ANALYZING', 'EVALUATING', 'COMPLETED'] as const
+const STEP_I18N: Record<string, string> = {
+  EXTRACTING: 'analysisProgress.extracting',
+  CHUNKING: 'analysisProgress.chunking',
+  ANALYZING: 'analysisProgress.analyzing',
+  EVALUATING: 'analysisProgress.evaluating',
+  COMPLETED: 'analysisProgress.completed',
+}
 
 function getStepIndex(step: string): number {
-  return STEPS.findIndex((s) => s.key === step)
+  return STEP_KEYS.indexOf(step as typeof STEP_KEYS[number])
 }
 
 export default function AnalysisProgress({ progress }: AnalysisProgressProps) {
+  const { t } = useTranslation()
   const currentIndex = progress ? getStepIndex(progress.step) : -1
 
   return (
     <div className="bg-white border border-gray-200 p-6">
       <div className="space-y-4">
-        {STEPS.map((step, index) => {
+        {STEP_KEYS.map((stepKey, index) => {
           const isComplete = index < currentIndex || progress?.step === 'COMPLETED'
           const isCurrent = index === currentIndex && progress?.step !== 'COMPLETED'
 
           return (
-            <div key={step.key} className="flex items-center gap-3">
+            <div key={stepKey} className="flex items-center gap-3">
               {/* Status icon */}
               <div className="shrink-0">
                 {isComplete ? (
@@ -56,7 +59,7 @@ export default function AnalysisProgress({ progress }: AnalysisProgressProps) {
                       : 'text-gray-400'
                   }`}
                 >
-                  {step.label}
+                  {t(STEP_I18N[stepKey])}
                 </span>
                 {isCurrent && progress?.message && (
                   <p className="text-xs text-gray-500 mt-0.5">{progress.message}</p>

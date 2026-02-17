@@ -3,6 +3,7 @@ package com.earlywarning.risk;
 import com.earlywarning.common.OpenAiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,13 +28,17 @@ public class RiskService {
         return riskRepository.countByContractIdAndLevel(contractId, level);
     }
 
+    @Transactional(readOnly = true)
     public OpenAiClient.NegotiationGuide generateNegotiationGuide(Long riskId) throws IOException {
         Risk risk = findById(riskId);
+        String language = risk.getContract() != null && risk.getContract().getLanguage() != null
+                ? risk.getContract().getLanguage() : "ko";
         return openAiClient.generateNegotiationGuide(
                 risk.getClause(),
                 risk.getLevel().name(),
                 risk.getReason(),
-                risk.getSuggestion()
+                risk.getSuggestion(),
+                language
         );
     }
 }

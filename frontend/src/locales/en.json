@@ -1,0 +1,144 @@
+{
+  "nav": {
+    "newAnalysis": "New Analysis",
+    "dashboard": "Dashboard",
+    "contracts": "History",
+    "logout": "Logout"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "loading": "Logging in...",
+    "noAccount": "Don't have an account?",
+    "register": "Sign Up",
+    "error": "Invalid email or password."
+  },
+  "register": {
+    "title": "Sign Up",
+    "name": "Name",
+    "namePlaceholder": "John Doe",
+    "email": "Email",
+    "password": "Password",
+    "passwordPlaceholder": "At least 6 characters",
+    "submit": "Sign Up",
+    "loading": "Creating...",
+    "hasAccount": "Already have an account?",
+    "login": "Login",
+    "error": "Registration failed."
+  },
+  "upload": {
+    "title": "New Contract Analysis",
+    "description": "Upload a contract and AI will automatically detect legal risks and analyze potential regulatory violations.",
+    "industryLabel": "Select Industry",
+    "industryHint": "Selecting an industry focuses the analysis on regulations specific to that sector.",
+    "uploadError": "An error occurred during upload. Please try again.",
+    "featureAiTitle": "AI Risk Analysis",
+    "featureAiDesc": "GPT-4o powered automatic legal risk detection and regulation matching",
+    "featureNegotiationTitle": "Negotiation Guide",
+    "featureNegotiationDesc": "AI-generated negotiation points from both party perspectives",
+    "featureAlertTitle": "Regulatory Alerts",
+    "featureAlertDesc": "Automatic alerts for contracts affected by regulatory changes",
+    "disclaimer": "EarlyWarning is a decision-support tool. Final judgment always rests with the user.",
+    "industry": {
+      "GENERAL": "General (All Regulations)",
+      "REAL_ESTATE": "Real Estate",
+      "EMPLOYMENT": "Employment",
+      "TAX_ACCOUNTING": "Tax/Accounting"
+    }
+  },
+  "fileUpload": {
+    "analyzing": "Starting contract analysis...",
+    "wait": "Please wait",
+    "dragOrClick": "Drag & drop a contract file or click to upload",
+    "supportedFormats": "PDF, TXT files supported",
+    "selectFile": "Select File"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "View risk statistics across all your contracts at a glance.",
+    "loadError": "Failed to load statistics.",
+    "totalContracts": "Total Contracts",
+    "totalRisks": "Total Risks",
+    "riskDistribution": "Risk Level Distribution",
+    "emptyChart": "Risk statistics will appear after analyzing contracts.",
+    "recentAnalysis": "Recent Analysis",
+    "viewAll": "View All",
+    "statusCompleted": "Completed",
+    "statusAnalyzing": "Analyzing",
+    "statusFailed": "Failed",
+    "emptyRecent": "No contracts analyzed yet."
+  },
+  "contracts": {
+    "title": "Analysis History",
+    "totalCount": "{{count}} contracts have been analyzed.",
+    "deleteAll": "Delete All",
+    "deletingAll": "Deleting...",
+    "newAnalysis": "New Analysis",
+    "confirmReanalyze": "Reanalyze with the latest regulation DB?",
+    "confirmDelete": "Delete \"{{filename}}\"?",
+    "confirmDeleteAll": "Delete all contracts? This action cannot be undone.",
+    "analyzing": "Analyzing...",
+    "failed": "Analysis Failed",
+    "noRisk": "No Risk",
+    "reanalyze": "Reanalyze",
+    "delete": "Delete",
+    "empty": "No contracts analyzed.",
+    "emptyAction": "Analyze your first contract",
+    "loadError": "Failed to load contracts."
+  },
+  "result": {
+    "analyzingTitle": "Analysis in Progress",
+    "contracts": "History",
+    "failedMessage": "Analysis failed.",
+    "reanalyze": "Reanalyze",
+    "reanalyzing": "Starting reanalysis...",
+    "reupload": "Upload Again",
+    "loadError": "Failed to load risk information.",
+    "uploadAgain": "Upload Again",
+    "title": "Analysis Results",
+    "riskCount": "{{count}} risks detected.",
+    "downloadPdf": "PDF Report",
+    "downloading": "Downloading...",
+    "downloadError": "Failed to download PDF report.",
+    "newAnalysis": "New Analysis",
+    "tabRisks": "Risk List",
+    "tabDocument": "Document View",
+    "confirmReanalyze": "Reanalyze with the latest regulation DB?"
+  },
+  "alerts": {
+    "title": "Alerts",
+    "markAllRead": "Mark All Read",
+    "empty": "No alerts."
+  },
+  "riskCard": {
+    "viewDetail": "View Details"
+  },
+  "pagination": {
+    "prev": "Prev",
+    "next": "Next"
+  },
+  "analysisProgress": {
+    "extracting": "Text Extraction",
+    "chunking": "Text Analysis",
+    "analyzing": "Regulation Comparison",
+    "evaluating": "Risk Evaluation",
+    "completed": "Analysis Complete"
+  },
+  "riskDetail": {
+    "tabDetail": "Risk Details",
+    "tabNegotiation": "Negotiation Guide",
+    "riskyClause": "Risky Clause",
+    "potentialViolation": "Potential Violation",
+    "aiSuggestion": "AI Suggestion",
+    "gapPerspective": "Party A Perspective",
+    "eulPerspective": "Party B Perspective",
+    "alternativeClauses": "Alternative Clauses",
+    "riskIfUnchanged": "Risk if Unchanged",
+    "guideError": "Failed to load negotiation guide."
+  },
+  "contractViewer": {
+    "unmatchedRisks": "Risks not found in document ({{count}})"
+  }
+}

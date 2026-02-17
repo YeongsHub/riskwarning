@@ -1,11 +1,19 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useLogin } from '../hooks/useLogin'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { mutate, isPending, error } = useLogin()
+  const { t, i18n } = useTranslation()
+
+  const toggleLanguage = () => {
+    const next = i18n.language === 'ko' ? 'en' : 'ko'
+    i18n.changeLanguage(next)
+    localStorage.setItem('language', next)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -13,7 +21,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative">
+      <button
+        onClick={toggleLanguage}
+        className="absolute top-4 right-4 text-xs px-3 py-1.5 rounded border border-white/30 text-white/70 hover:text-white hover:border-white/60 transition font-medium"
+      >
+        {i18n.language === 'ko' ? 'EN' : 'KO'}
+      </button>
       <div className="max-w-md w-full mx-4">
         {/* Branding */}
         <div className="text-center mb-8">
@@ -28,7 +42,7 @@ export default function LoginPage() {
 
         {/* Card */}
         <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">로그인</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('login.title')}</h2>
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
@@ -41,7 +55,7 @@ export default function LoginPage() {
             )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                이메일
+                {t('login.email')}
               </label>
               <input
                 id="email"
@@ -55,7 +69,7 @@ export default function LoginPage() {
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                비밀번호
+                {t('login.password')}
               </label>
               <input
                 id="password"
@@ -75,14 +89,14 @@ export default function LoginPage() {
               {isPending ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                  로그인 중...
+                  {t('login.loading')}
                 </span>
-              ) : '로그인'}
+              ) : t('login.submit')}
             </button>
             <div className="text-center text-sm">
-              <span className="text-gray-500">계정이 없으신가요? </span>
+              <span className="text-gray-500">{t('login.noAccount')} </span>
               <Link to="/register" className="text-blue-600 hover:text-blue-500 font-medium">
-                회원가입
+                {t('login.register')}
               </Link>
             </div>
           </form>

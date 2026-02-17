@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAlerts, useMarkAlertAsRead, useMarkAllAlertsAsRead } from '../hooks/useAlerts'
 import Pagination from '../components/Pagination'
 
@@ -10,6 +11,8 @@ export default function AlertsPage() {
   const markAsRead = useMarkAlertAsRead()
   const markAllAsRead = useMarkAllAlertsAsRead()
   const [currentPage, setCurrentPage] = useState(1)
+  const { t, i18n } = useTranslation()
+  const dateLocale = i18n.language === 'ko' ? 'ko-KR' : 'en-US'
 
   const hasUnread = alerts?.some((a) => !a.read)
   const totalPages = Math.ceil((alerts?.length || 0) / PAGE_SIZE)
@@ -30,21 +33,21 @@ export default function AlertsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">알림</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('alerts.title')}</h2>
         {hasUnread && (
           <button
             onClick={() => markAllAsRead.mutate()}
             disabled={markAllAsRead.isPending}
             className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-50"
           >
-            모두 읽음
+            {t('alerts.markAllRead')}
           </button>
         )}
       </div>
 
       {!alerts || alerts.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500">알림이 없습니다.</p>
+          <p className="text-gray-500">{t('alerts.empty')}</p>
         </div>
       ) : (
         <>
@@ -73,7 +76,7 @@ export default function AlertsPage() {
                     <p className="text-sm break-words">{alert.message}</p>
                   </div>
                   <span className="text-xs text-gray-400 shrink-0 whitespace-nowrap">
-                    {new Date(alert.createdAt).toLocaleDateString('ko-KR')}
+                    {new Date(alert.createdAt).toLocaleDateString(dateLocale)}
                   </span>
                 </div>
               </Link>
