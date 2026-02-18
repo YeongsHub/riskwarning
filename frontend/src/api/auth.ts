@@ -1,7 +1,7 @@
 import i18n from '../i18n'
 import type { AuthResponse, LoginCredentials, RegisterCredentials } from '../types'
 
-const API_BASE = '/api'
+const API_BASE = (window as any).__RUNTIME_CONFIG__?.API_BASE || '/api'
 
 export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
   const response = await fetch(`${API_BASE}/auth/login`, {

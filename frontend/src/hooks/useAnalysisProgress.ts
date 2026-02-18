@@ -17,7 +17,8 @@ export function useAnalysisProgress(contractId: number, enabled: boolean) {
 
     async function connect() {
       try {
-        const response = await fetch(`/api/contracts/${contractId}/progress`, {
+        const apiBase = (window as any).__RUNTIME_CONFIG__?.API_BASE || '/api'
+        const response = await fetch(`${apiBase}/contracts/${contractId}/progress`, {
           headers: {
             ...getAuthHeaders(),
             Accept: 'text/event-stream',

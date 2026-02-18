@@ -10,18 +10,9 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    # API proxy - uses environment variable
-    location /api {
-        proxy_pass ${BACKEND_URL};
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # SSE support
-        proxy_buffering off;
-        proxy_cache off;
-        proxy_read_timeout 300s;
+    # Runtime config
+    location /config.js {
+        default_type application/javascript;
+        return 200 'window.__RUNTIME_CONFIG__={API_BASE:"${BACKEND_URL}/api"};';
     }
 }

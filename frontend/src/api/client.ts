@@ -1,6 +1,6 @@
 import type { Contract, Risk, RiskDetail, ContractSummary, ContractDetail, DashboardStats, NegotiationGuide, RegulationAlert, UnreadCount, Industry } from '../types'
 
-const API_BASE = '/api'
+const API_BASE = (window as any).__RUNTIME_CONFIG__?.API_BASE || '/api'
 
 function getAuthHeaders(): HeadersInit {
   const token = localStorage.getItem('token')
